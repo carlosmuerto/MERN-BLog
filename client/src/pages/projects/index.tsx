@@ -1,10 +1,10 @@
-import React from 'react'
 
-type Props = {}
 
-const Projects = (props: Props) => {
+const Projects = () => {
   return (
-    <div>Projects</div>
+    <h1 className="text-3xl font-bold underline">
+      Projects
+    </h1>
   )
 }
 
