@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Button, Navbar, TextInput } from "flowbite-react";
-import React from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 
@@ -27,11 +26,19 @@ const Header = () => {
 				<AiOutlineSearch />
 			</Button>
 
+			<div className="flex gap-2 md:order-2">
+				<Button className="w-12 h-10 hidden sm:inline" color="gray"	>
+					<FaMoon />
+				</Button>
+				<Link to="/signIn" className=" [&.active]:font-bold">
+					<Button>
+						Sign In
+					</Button>
+				</Link>
+			</div>
+
 {/* 
-			<Link to="/" className=" [&.active]:font-bold">
-				<span>MERN</span>
-				blog
-			</Link> */}
+			*/}
 
 		</Navbar>
 	);
