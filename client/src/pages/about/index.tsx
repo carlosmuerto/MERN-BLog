@@ -1,9 +1,9 @@
-type Props = {}
-
-const About = (props: Props) => {
+const About = () => {
   return (
-    <div>About</div>
+    <h1 className="text-3xl font-bold underline">
+      About
+    </h1>
   )
 }
 
-export default About;
+export default About
