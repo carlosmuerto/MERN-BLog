@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": ".",                                  
+    "baseUrl": "./",                                  
     "paths": {
       "@services/*": ["src/services/*"],
       "@models/*": ["src/models/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@routes/*": ["src/routes/*"],
+      "@routes": ["src/routes"],
+      "@controllers/*": ["src/controllers/*"],
+      "@controllers": ["src/controllers"],
     },
     
     "target": "ES2016",
