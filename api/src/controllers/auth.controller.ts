@@ -1,12 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
-const signIn = (req: Request, res: Response) => {
-	const {} = res
+const signUp = (req: Request, res: Response, next:NextFunction) => {
+	const userJSON = req.body
+  console.log(userJSON)
 	res.json({
     message: "api is auth"
   });
 }
 
-const controllers = { signIn }
+const controllers = { signUp }
 
 export default controllers
