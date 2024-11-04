@@ -3,9 +3,9 @@ import { BaseError, ValidationError } from "@utils/error";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 
-const signUp = (req: Request, res: Response, next: NextFunction) => {
+const signUp = async (req: Request, res: Response, next: NextFunction) => {
   const newUser = new userModel(req.body);
-
+  await new Promise(f => setTimeout(f, 1000));
   newUser
     .save()
     .then((user) => {
@@ -21,10 +21,9 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .catch((err:mongoose.Error.ValidationError) => {
       // handle validation Errors
       console.log(`[mongodb]: ValidationError`)
-      const errorMessages:string[] = []
-      console.log(err)
+      const errorMessages:Map<string, String> = new Map()
       for(const errKey in err.errors) {
-        errorMessages.push(err.errors[errKey].message)
+        errorMessages.set(errKey, err.errors[errKey].message)
       }
 
       next(new ValidationError( err.message.split(":")[0],errorMessages))

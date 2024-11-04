@@ -1,10 +1,74 @@
 import { Link } from "@tanstack/react-router";
-import { Button, TextInput } from "flowbite-react";
+import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useState } from "react";
+import { HiInformationCircle } from "react-icons/hi";
 
-type Props = {};
+type SignUpInputs = {
+  username: string;
+  email: string;
+  password: string;
+};
 
-const SignUp = (_props: Props) => {
+const SignUp = () => {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<SignUpInputs>();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit: SubmitHandler<SignUpInputs> = async (e: SignUpInputs) => {
+    setIsLoading(true);
+    fetch("/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(e),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        return Promise.reject(response);
+      })
+      .then((responseJson) => {
+        // all good, token is ready
+        console.log(responseJson);
+      })
+      .catch((response) => {
+        // good conection bad response
+        // 3. get error messages, if any
+        response.json().then((errorJson: any) => {
+          const emptyMessageStack = true;
+          for (const entry in errorJson.messageStack) {
+            if (
+              entry == "username" ||
+              entry == "email" ||
+              entry == "password"
+            ) {
+              setError(entry, {
+                message: errorJson.messageStack[entry],
+              });
+            }
+          }
+          if (emptyMessageStack) {
+            setError("root", {
+              message: errorJson.message,
+            });
+          }
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -27,27 +91,64 @@ const SignUp = (_props: Props) => {
                 <BsGithub />
               </Link>
             </span>
-            and look how it works, you can signUp with email and password or continue with Google
+            and look how it works, you can signUp with email and password or
+            continue with Google
           </p>
         </div>
         <div className="rigth-side flex-1">
-          <form className="flex flex-col gap-4">
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="">
-              <TextInput type="text" placeholder="username" id="username"/>
+              <TextInput
+                {...register("username", { required: true })}
+                type="text"
+                placeholder="username"
+                id="username"
+              />
+              <span className="text-sm text-red-500 mt-5">
+                {errors.email && <p>{errors.email.message}</p>}
+              </span>
             </div>
             <div className="">
-              <TextInput type="email" placeholder="email" id="email"/>
+              <TextInput
+                {...register("email", { required: true })}
+                type="email"
+                placeholder="email"
+                id="email"
+              />
+              <span className="text-sm text-red-500 mt-5">
+                {errors.email && <p>{errors.email.message}</p>}
+              </span>
             </div>
             <div className="">
-              <TextInput type="password" placeholder="password" id="password"/>
+              <TextInput
+                {...register("password", { required: true })}
+                type="password"
+                placeholder="password"
+                id="password"
+              />
+              <span className="text-sm text-red-500 mt-5">
+                {errors.password && <p>{errors.password.message}</p>}
+              </span>
             </div>
-            <Button type="submit">
-              Sign Up
+            {errors.root && (
+              <Alert color="failure" icon={HiInformationCircle}>
+                <span className="font-medium">{errors.root.message}</span>
+              </Alert>
+            )}
+
+            <Button disabled={isLoading} type="submit">
+              {" "}
+              {isLoading ? "loading" : "Sign Up"}
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>have a account?</span>
-            <Link to="/signIn" className="text-blue-500">Sign Up</Link>
+            <Link to="/signIn" className="text-blue-500">
+              Sign In
+            </Link>
           </div>
         </div>
       </div>
