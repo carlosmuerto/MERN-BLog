@@ -33,10 +33,10 @@ const SignIn = (_props: Props) => {
         <div className="rigth-side flex-1">
           <form className="flex flex-col gap-4">
             <div className="">
-              <TextInput type="text" placeholder="email" id="email"/>
+              <TextInput type="email" placeholder="email" id="email"/>
             </div>
             <div className="">
-              <TextInput type="text" placeholder="password" id="password"/>
+              <TextInput type="password" placeholder="password" id="password"/>
             </div>
             <Button type="submit">
               Sign In

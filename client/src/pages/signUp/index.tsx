@@ -36,10 +36,10 @@ const SignUp = (_props: Props) => {
               <TextInput type="text" placeholder="username" id="username"/>
             </div>
             <div className="">
-              <TextInput type="text" placeholder="email" id="email"/>
+              <TextInput type="email" placeholder="email" id="email"/>
             </div>
             <div className="">
-              <TextInput type="text" placeholder="password" id="password"/>
+              <TextInput type="password" placeholder="password" id="password"/>
             </div>
             <Button type="submit">
               Sign Up
