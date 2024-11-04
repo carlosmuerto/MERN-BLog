@@ -33,8 +33,8 @@ const Header = () => {
         <Button className="w-12 h-10 hidden sm:inline" color="gray">
           <FaMoon />
         </Button>
-        <Link to="/signIn">
-          <Button>Sign In</Button>
+        <Link to="/signUp">
+          <Button>Sign Up</Button>
         </Link>
         <Navbar.Toggle className="" />
       </div>

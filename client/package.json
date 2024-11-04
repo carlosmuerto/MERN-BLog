@@ -6,6 +6,7 @@
   "keywords": [],
   "author": "Carlos A. Vivas N.",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

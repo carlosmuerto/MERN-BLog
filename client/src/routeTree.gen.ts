@@ -16,8 +16,8 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const SignUpLazyImport = createFileRoute('/signUp')()
 const SignOutLazyImport = createFileRoute('/signOut')()
-const SignInLazyImport = createFileRoute('/signIn')()
 const ProjectsLazyImport = createFileRoute('/projects')()
 const DashboardLazyImport = createFileRoute('/dashboard')()
 const AboutLazyImport = createFileRoute('/about')()
@@ -25,17 +25,17 @@ const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
+const SignUpLazyRoute = SignUpLazyImport.update({
+  id: '/signUp',
+  path: '/signUp',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/signUp.lazy').then((d) => d.Route))
+
 const SignOutLazyRoute = SignOutLazyImport.update({
   id: '/signOut',
   path: '/signOut',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/signOut.lazy').then((d) => d.Route))
-
-const SignInLazyRoute = SignInLazyImport.update({
-  id: '/signIn',
-  path: '/signIn',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/signIn.lazy').then((d) => d.Route))
 
 const ProjectsLazyRoute = ProjectsLazyImport.update({
   id: '/projects',
@@ -93,18 +93,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsLazyImport
       parentRoute: typeof rootRoute
     }
-    '/signIn': {
-      id: '/signIn'
-      path: '/signIn'
-      fullPath: '/signIn'
-      preLoaderRoute: typeof SignInLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/signOut': {
       id: '/signOut'
       path: '/signOut'
       fullPath: '/signOut'
       preLoaderRoute: typeof SignOutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/signUp': {
+      id: '/signUp'
+      path: '/signUp'
+      fullPath: '/signUp'
+      preLoaderRoute: typeof SignUpLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -117,8 +117,8 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
   '/projects': typeof ProjectsLazyRoute
-  '/signIn': typeof SignInLazyRoute
   '/signOut': typeof SignOutLazyRoute
+  '/signUp': typeof SignUpLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -126,8 +126,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
   '/projects': typeof ProjectsLazyRoute
-  '/signIn': typeof SignInLazyRoute
   '/signOut': typeof SignOutLazyRoute
+  '/signUp': typeof SignUpLazyRoute
 }
 
 export interface FileRoutesById {
@@ -136,8 +136,8 @@ export interface FileRoutesById {
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
   '/projects': typeof ProjectsLazyRoute
-  '/signIn': typeof SignInLazyRoute
   '/signOut': typeof SignOutLazyRoute
+  '/signUp': typeof SignUpLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -147,18 +147,18 @@ export interface FileRouteTypes {
     | '/about'
     | '/dashboard'
     | '/projects'
-    | '/signIn'
     | '/signOut'
+    | '/signUp'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/projects' | '/signIn' | '/signOut'
+  to: '/' | '/about' | '/dashboard' | '/projects' | '/signOut' | '/signUp'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/dashboard'
     | '/projects'
-    | '/signIn'
     | '/signOut'
+    | '/signUp'
   fileRoutesById: FileRoutesById
 }
 
@@ -167,8 +167,8 @@ export interface RootRouteChildren {
   AboutLazyRoute: typeof AboutLazyRoute
   DashboardLazyRoute: typeof DashboardLazyRoute
   ProjectsLazyRoute: typeof ProjectsLazyRoute
-  SignInLazyRoute: typeof SignInLazyRoute
   SignOutLazyRoute: typeof SignOutLazyRoute
+  SignUpLazyRoute: typeof SignUpLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -176,8 +176,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutLazyRoute: AboutLazyRoute,
   DashboardLazyRoute: DashboardLazyRoute,
   ProjectsLazyRoute: ProjectsLazyRoute,
-  SignInLazyRoute: SignInLazyRoute,
   SignOutLazyRoute: SignOutLazyRoute,
+  SignUpLazyRoute: SignUpLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -196,8 +196,8 @@ export const routeTree = rootRoute
         "/about",
         "/dashboard",
         "/projects",
-        "/signIn",
-        "/signOut"
+        "/signOut",
+        "/signUp"
       ]
     },
     "/": {
@@ -212,11 +212,11 @@ export const routeTree = rootRoute
     "/projects": {
       "filePath": "projects.lazy.tsx"
     },
-    "/signIn": {
-      "filePath": "signIn.lazy.tsx"
-    },
     "/signOut": {
       "filePath": "signOut.lazy.tsx"
+    },
+    "/signUp": {
+      "filePath": "signUp.lazy.tsx"
     }
   }
 }
