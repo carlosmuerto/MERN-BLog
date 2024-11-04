@@ -4,7 +4,7 @@ import { BsGithub } from "react-icons/bs";
 
 type Props = {};
 
-const SignIn = (props: Props) => {
+const SignIn = (_props: Props) => {
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
