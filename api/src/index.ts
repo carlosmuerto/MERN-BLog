@@ -3,12 +3,15 @@ import dotenv from "dotenv";
 
 import Database from "@services/database";
 import routes from "@routes";
-import { BaseError } from "@utils/error";
+import { BaseError, errorHandeler } from "@utils/error";
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+
+// most go first
+app.use(express.json())
 
 // routes
 app.use("/api", routes);
@@ -21,10 +24,8 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 //MiddleWare
-app.use(express.json())
-app.use((err:BaseError, req:Request, res: Response, next: NextFunction) => {
-  
-})
+
+app.use(errorHandeler)
 
 // Conect to db
 Database.run()

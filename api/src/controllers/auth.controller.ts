@@ -1,9 +1,10 @@
 import userModel from "@models/user.model";
+import { BaseError, ValidationError } from "@utils/error";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 
 const signUp = (req: Request, res: Response, next: NextFunction) => {
-  const newUser = new userModel( req.body);
+  const newUser = new userModel(req.body);
 
   newUser
     .save()
@@ -16,6 +17,17 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
         message: "Sign Up successfully",
         user: {username, email, _id }
       });
+    })
+    .catch((err:mongoose.Error.ValidationError) => {
+      // handle validation Errors
+      console.log(`[mongodb]: ValidationError`)
+      const errorMessages:string[] = []
+      console.log(err)
+      for(const errKey in err.errors) {
+        errorMessages.push(err.errors[errKey].message)
+      }
+
+      next(new ValidationError( err.message.split(":")[0],errorMessages))
     })
     .catch((err) => {
       console.log(`[mongodb]: UNHANDLE ERROR at SignUp User !!!!!`);
