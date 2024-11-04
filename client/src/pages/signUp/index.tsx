@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
@@ -12,6 +12,7 @@ type SignUpInputs = {
 };
 
 const SignUp = () => {
+
   const {
     register,
     handleSubmit,
@@ -20,6 +21,7 @@ const SignUp = () => {
   } = useForm<SignUpInputs>();
 
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (e: SignUpInputs) => {
     setIsLoading(true);
@@ -37,9 +39,10 @@ const SignUp = () => {
         }
         return Promise.reject(response);
       })
-      .then((responseJson) => {
+      .then((_responseJson) => {
         // all good, token is ready
-        console.log(responseJson);
+        navigate({ to: "/signIn" });
+
       })
       .catch((response) => {
         // good conection bad response
@@ -133,16 +136,24 @@ const SignUp = () => {
                 {errors.password && <p>{errors.password.message}</p>}
               </span>
             </div>
+
+            <Button disabled={isLoading} type="submit">
+              {" "}
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Loading</span>
+                </>
+              ) : (
+                "Sign Up"
+              )}
+            </Button>
+
             {errors.root && (
               <Alert color="failure" icon={HiInformationCircle}>
                 <span className="font-medium">{errors.root.message}</span>
               </Alert>
             )}
-
-            <Button disabled={isLoading} type="submit">
-              {" "}
-              {isLoading ? "loading" : "Sign Up"}
-            </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>have a account?</span>
