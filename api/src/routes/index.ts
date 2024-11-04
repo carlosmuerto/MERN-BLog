@@ -6,7 +6,7 @@ import { authRoute } from './auth.route';
 const routes = express.Router();
 
 routes.use(defaultRoute);
-routes.use(userRoute);
-routes.use(authRoute)
+routes.use("/users",userRoute);
+routes.use("/auth", authRoute)
 
 export default routes;

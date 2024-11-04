@@ -3,4 +3,4 @@ import UserController from '@controllers/user.controller'
 
 export const userRoute = Router();
 
-userRoute.get('/users', UserController.get);
+userRoute.get('/', UserController.get);
