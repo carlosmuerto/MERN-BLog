@@ -1,8 +1,11 @@
 {
-  "name": "client",
+  "name": "mern-blog-client-side",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [],
+  "author": "Carlos A. Vivas N.",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
