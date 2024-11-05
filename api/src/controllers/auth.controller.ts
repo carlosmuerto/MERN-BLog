@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 const signUp = (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.body);
   const newUser = new userModel(req.body);
 
   // await new Promise((f) => setTimeout(f, 1000));

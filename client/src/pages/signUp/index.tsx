@@ -40,7 +40,7 @@ const SignUp = () => {
         return Promise.reject(response);
       })
       .then(() => {
-        // all good, token is ready
+        // all good
         navigate({ to: "/signIn" });
 
       })

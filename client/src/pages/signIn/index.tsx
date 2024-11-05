@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -11,6 +11,8 @@ type SignInInputs = {
 };
 
 const SignIn = () => {
+  const navigate = useNavigate()
+
 	const {
     register,
     handleSubmit,
@@ -22,11 +24,11 @@ const SignIn = () => {
 
   const onSubmit: SubmitHandler<SignInInputs> = async (e: SignInInputs) => {
     setIsLoading(true);
-    fetch("/api/auth/signup", {
+    fetch("/api/auth/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        "Accept": "application/json",
       },
       body: JSON.stringify(e),
     })
@@ -39,11 +41,13 @@ const SignIn = () => {
       .then((responseJson) => {
         // all good, token is ready
         console.log(responseJson);
+
+        navigate({ to: "/" });
       })
       .catch((response) => {
         // good conection bad response
         // 3. get error messages, if any
-        response.json().then((errorJson: any) => {
+        response.json().then((errorJson: { messageStack: { [x: string]: string; }; message: string; }) => {
           const emptyMessageStack = true;
           for (const entry in errorJson.messageStack) {
             if (
