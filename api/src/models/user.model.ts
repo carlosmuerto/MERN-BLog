@@ -51,7 +51,7 @@ userSchema.pre("save", async function (next: HookNextFunction) {
 
 // password validation method
 userSchema.methods.validatePassword = async function (pass: string) {
-  return bcrypt.compare(pass, this.password);
+  return await bcrypt.compare(pass, this.password);
 };
 
 export default mongoose.model<IUser>("User", userSchema);
