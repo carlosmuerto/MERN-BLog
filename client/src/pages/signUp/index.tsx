@@ -29,7 +29,7 @@ const SignUp = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        "Accept": "application/json",
       },
       body: JSON.stringify(e),
     })
@@ -39,7 +39,7 @@ const SignUp = () => {
         }
         return Promise.reject(response);
       })
-      .then((_responseJson) => {
+      .then(() => {
         // all good, token is ready
         navigate({ to: "/signIn" });
 
@@ -47,7 +47,7 @@ const SignUp = () => {
       .catch((response) => {
         // good conection bad response
         // 3. get error messages, if any
-        response.json().then((errorJson: any) => {
+        response.json().then((errorJson: { messageStack: { [x: string]: string; }; message: string; }) => {
           const emptyMessageStack = true;
           for (const entry in errorJson.messageStack) {
             if (
