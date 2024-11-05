@@ -87,12 +87,13 @@ const SignUp = () => {
             check this
             <span className="font-bold dark:text-white mx-1">
               project
-              <Link
+              <a
                 href="https://github.com/carlosmuerto/MERN-BLog"
+                target="_blank"
                 className="inline-block  ml-1"
               >
                 <BsGithub />
-              </Link>
+              </a>
             </span>
             and look how it works, you can signUp with email and password or
             continue with Google

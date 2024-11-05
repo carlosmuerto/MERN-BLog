@@ -83,12 +83,13 @@ const SignIn = () => {
 						check this
 						<span className="font-bold dark:text-white mx-1">
 							project
-							<Link
-								href="https://github.com/carlosmuerto/MERN-BLog"
-								className="inline-block  ml-1"
-							>
-								<BsGithub />
-							</Link>
+							<a
+                href="https://github.com/carlosmuerto/MERN-BLog"
+                target="_blank"
+                className="inline-block  ml-1"
+              >
+                <BsGithub />
+              </a>
 						</span>
 						and look how it works, you can SignIn with email and password or continue with Google
 					</p>
