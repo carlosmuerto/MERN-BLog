@@ -59,7 +59,6 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then(async (userDoc) => {
       if (userDoc && (await userDoc.validatePassword(password))) {
-        console.log(userDoc);
 
         const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
 
@@ -79,8 +78,9 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
           message: "login success",
           token: token,
         });
+      } else {
+        return Promise.reject(new ValidationError("Email or Password Incorrect"));
       }
-      return Promise.reject(new ValidationError("Email or Password Incorrect"));
     })
     .catch((err) => {
       next(err);
