@@ -63,7 +63,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 
         // ** This is our JWT Token
         const token = jwt.sign(
-          { _id: userDoc._id, email: userDoc.email },
+          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
           jwtSecret,
           {
             expiresIn: "1d",

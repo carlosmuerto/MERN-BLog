@@ -3,7 +3,9 @@ import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import { useState } from "react";
+// import { useEffect, useState } from "react";
+import AuthAPI, {SignInErros} from "../../services/Auth";
+import { useEffect } from "react";
 
 type SignInInputs = {
 	email: string,
@@ -11,6 +13,8 @@ type SignInInputs = {
 };
 
 const SignIn = () => {
+  // const navigate = useNavigate()
+  const [registerUser, { isLoading, isSuccess, error, isError /*, data: user */ }] = AuthAPI.useSignInMutation()
   const navigate = useNavigate()
 
 	const {
@@ -20,56 +24,22 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<SignInInputs>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const onSubmit: SubmitHandler<SignInInputs> = async (e) => registerUser(e);
 
-  const onSubmit: SubmitHandler<SignInInputs> = async (e: SignInInputs) => {
-    setIsLoading(true);
-    fetch("/api/auth/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(e),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(response);
-      })
-      .then((responseJson) => {
-        // all good, token is ready
-        console.log(responseJson);
+  useEffect(() => {
+    if (isSuccess) {
+      navigate({to: "/"});
+    }
+  }, [isSuccess, navigate]);
 
-        navigate({ to: "/" });
-      })
-      .catch((response) => {
-        // good conection bad response
-        // 3. get error messages, if any
-        response.json().then((errorJson: { messageStack: { [x: string]: string; }; message: string; }) => {
-          const emptyMessageStack = true;
-          for (const entry in errorJson.messageStack) {
-            if (
-              entry == "email" ||
-              entry == "password"
-            ) {
-              setError(entry, {
-                message: errorJson.messageStack[entry],
-              });
-            }
-          }
-          if (emptyMessageStack) {
-            setError("root", {
-              message: errorJson.message,
-            });
-          }
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  useEffect(() => {
+    if (isError) {
+      console.log("in ",error)
+
+      setError("root",{message: (error as SignInErros).message})
+    }
+  }, [isError, error, setError]);
+
 
 
 	return (
