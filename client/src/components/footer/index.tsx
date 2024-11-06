@@ -3,9 +3,8 @@ import { Footer } from "flowbite-react";
 import Logo from "../logo";
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
-type Props = {};
 
-const FooterComp = (_props: Props) => {
+const FooterComp = () => {
   return (
     <Footer container className="border border-t-8 border-teal-500">
       <div className="w-full max-w-7xl mx-auto">

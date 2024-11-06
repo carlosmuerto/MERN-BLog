@@ -1,6 +1,5 @@
-type Props = {}
 
-const SignOut = (props: Props) => {
+const SignOut = () => {
   return (
     <div>SignOut</div>
   )

@@ -16,12 +16,24 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .then((user) => {
       console.log(`[mongodb]: ${user.username} signed Up successfully`);
 
-      const { username, email, _id } = user;
+      const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
 
-      res.json({
-        message: "Sign Up successfully",
-        user: { username, email, _id },
-      });
+        // ** This is our JWT Token
+        const token = jwt.sign(
+          { id: user._id, email: user.email, username: user.username },
+          jwtSecret,
+          {
+            expiresIn: "1d",
+          }
+        );
+        res.status(200).header({
+          "Authorization": `Bearer ${token}`
+        }).json({
+          status: 200,
+          success: true,
+          message: "Sign Up successfully",
+          token: token,
+        });
     })
     .catch((err: mongoose.Error.ValidationError) => {
       // handle validation Errors

@@ -4,15 +4,16 @@ import { jwtDecode } from "jwt-decode";
 
 // Auth User Model
 
-export interface User {
+export type User = {
   id: string;
   username: string;
   email: string;
 }
 
-export interface SignInErros {
+export type SignInErros = {
   statusCode: number;
   message: string;
+  messageStack: { [x: string]: string };
 }
 
 // actions CONSTANTS
@@ -30,6 +31,22 @@ export const AuthAPI = createApi({
         url: "/auth/signin",
         method: "POST",
         body: { email, password },
+      }),
+      transformResponse: (response: { token: string }) =>
+        jwtDecode<User>(response.token),
+      transformErrorResponse: (err) => {
+        if ('data' in err) {
+          return err.data as SignInErros;
+        }
+        return err;
+      },
+    }),
+
+		signUp: builder.mutation<User, { email: string; username: string; password: string }>({
+      query: ({ email, username, password }) => ({
+        url: "/auth/signUp",
+        method: "POST",
+        body: { email, username, password },
       }),
       transformResponse: (response: { token: string }) =>
         jwtDecode<User>(response.token),

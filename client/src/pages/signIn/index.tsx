@@ -6,6 +6,8 @@ import { HiInformationCircle } from "react-icons/hi";
 // import { useEffect, useState } from "react";
 import AuthAPI, {SignInErros} from "../../services/Auth";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../redux/authSlice";
 
 type SignInInputs = {
 	email: string,
@@ -13,9 +15,9 @@ type SignInInputs = {
 };
 
 const SignIn = () => {
-  // const navigate = useNavigate()
-  const [registerUser, { isLoading, isSuccess, error, isError /*, data: user */ }] = AuthAPI.useSignInMutation()
+  const [registerUser, { isLoading, isSuccess, error, isError , data: user  }] = AuthAPI.useSignInMutation()
   const navigate = useNavigate()
+  const dispatch = useDispatch();
 
 	const {
     register,
@@ -28,9 +30,12 @@ const SignIn = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate({to: "/"});
+	 		console.log("page")
+      console.log(user)
+      dispatch(setCredentials(user))
+      navigate({ to: "/" });
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, navigate, user, dispatch]);
 
   useEffect(() => {
     if (isError) {
