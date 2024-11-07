@@ -24,4 +24,4 @@ export const { setCredentials } = slice.actions
 
 export default slice.reducer
 
-export const selectCurrentUser = (state: RootState) => state.user
+export const selectCurrentUser = (state: RootState) => state.persisted.user
