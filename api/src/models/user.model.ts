@@ -14,15 +14,17 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  profileImg: string | null;
   validatePassword(password: string): boolean;
 }
 
 // 2. Create a Schema corresponding to the document interface.
 const userSchema = new Schema<IUser>(
   {
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    profileImg: {type: String, default: null}
   },
   {
     timestamps: true,

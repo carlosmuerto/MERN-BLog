@@ -16,6 +16,13 @@ export class BaseError extends Error {
 }
 
 // 404 error class
+export class UnAuthenticatedError extends BaseError {
+  constructor(message: string) {
+    super(message, 401);
+  }
+}
+
+// 404 error class
 export class NotFoundError extends BaseError {
   constructor(message: string) {
     super(message, 404);

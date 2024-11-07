@@ -13,25 +13,29 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
   // await new Promise((f) => setTimeout(f, 1000));
   newUser
     .save()
-    .then((user) => {
-      console.log(`[mongodb]: ${user.username} signed Up successfully`);
+    .then((userDoc) => {
+      console.log(`[mongodb]: ${userDoc.username} signed Up successfully`);
 
       const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
 
         // ** This is our JWT Token
         const token = jwt.sign(
-          { id: user._id, email: user.email, username: user.username },
+          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
           jwtSecret,
           {
             expiresIn: "1d",
           }
         );
+
+        const {password, ...userData} = userDoc
+
         res.status(200).header({
           "Authorization": `Bearer ${token}`
         }).json({
           status: 200,
           success: true,
           message: "Sign Up successfully",
+          user: userData,
           token: token,
         });
     })
@@ -81,12 +85,16 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
             expiresIn: "1d",
           }
         );
+
+        const {password, ...userData} = userDoc
+
         res.status(200).header({
           "Authorization": `Bearer ${token}`
         }).json({
           status: 200,
           success: true,
           message: "login success",
+          user: userData,
           token: token,
         });
       } else {

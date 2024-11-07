@@ -8,6 +8,9 @@ export type User = {
   id: string;
   username: string;
   email: string;
+  profileImg: string | null;
+  token: string;
+  password: string;
 }
 
 export type SignInErros = {
@@ -32,8 +35,13 @@ export const AuthAPI = createApi({
         method: "POST",
         body: { email, password },
       }),
-      transformResponse: (response: { token: string }) =>
-        jwtDecode<User>(response.token),
+      transformResponse: (response: { token: string }) => {
+        const decoded = jwtDecode(response.token)
+        return {
+          token: response.token,
+          ...decoded
+        } as  User
+      },
       transformErrorResponse: (err) => {
         if ('data' in err) {
           return err.data as SignInErros;
@@ -48,8 +56,13 @@ export const AuthAPI = createApi({
         method: "POST",
         body: { email, username, password },
       }),
-      transformResponse: (response: { token: string }) =>
-        jwtDecode<User>(response.token),
+      transformResponse: (response: { token: string }) => {
+        const decoded = jwtDecode(response.token)
+        return {
+          token: response.token,
+          ...decoded
+        } as  User
+      },
       transformErrorResponse: (err) => {
         if ('data' in err) {
           return err.data as SignInErros;
