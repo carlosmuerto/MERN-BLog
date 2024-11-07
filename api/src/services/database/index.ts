@@ -8,7 +8,8 @@ async function run() {
 	// 4. Connect to MongoDB
 	await mongoose.connect(mongodbURL)
 		.then(() => console.log(`[mongodb]: 🛢️ Connected To Mongodb database`))
-		.catch(() => console.log(`[mongodb]: ⚠️ Mongodb can NOT connent to "${mongodbURL}"`))
+		.catch((err) => console.log(`[mongodb]: ⚠️ Mongodb can NOT connent to "${mongodbURL}" 
+			${err}`))
 		;
 }
 
