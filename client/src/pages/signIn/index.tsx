@@ -3,7 +3,7 @@ import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import AuthAPI, {SignInErros} from "../../services/Auth";
+import AuthAPI, {APIErros} from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/authSlice";
@@ -38,7 +38,7 @@ const SignIn = () => {
     if (isError) {
       console.log("in ",error)
 
-      setError("root",{message: (error as SignInErros).message})
+      setError("root",{message: (error as APIErros).message})
     }
   }, [isError, error, setError]);
 

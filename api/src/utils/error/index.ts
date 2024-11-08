@@ -45,6 +45,8 @@ export const errorHandeler = (err: Error, req: Request, res: Response, next: Nex
       messageStack: Object.fromEntries(err.messageStack),
     });
   } else {
+    console.log('[server] "UNKNOW UNHNADLE ERROR')
+    console.log(err)
     res.status(500).json({
       message: "UNKNOW UNHNADLE ERROR",
     });

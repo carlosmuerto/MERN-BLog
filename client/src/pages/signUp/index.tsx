@@ -3,7 +3,7 @@ import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import AuthAPI, { SignInErros } from "../../services/Auth";
+import AuthAPI, { APIErros } from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/authSlice";
@@ -43,7 +43,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isError) {
-      const errorData = (error as SignInErros)
+      const errorData = (error as APIErros)
       console.log("in ", error);
       const emptyMessageStack = true;
       for (const entry in errorData.messageStack) {

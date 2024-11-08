@@ -7,6 +7,22 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 
 dotenv.config();
 
+const ExtractEmailFromJWT = (req: Request) => {
+  const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
+
+  if (!req.headers.authorization) return null
+
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return null
+
+  const result: string | JwtPayload = jwt.verify(token, jwtSecret)
+  
+  if ((typeof result === "string")) return null
+  if (!result.email) return null
+
+  return result.email
+}
+
 const signUp = (req: Request, res: Response, next: NextFunction) => {
   const newUser = new userModel(req.body);
 
@@ -107,19 +123,14 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const signOut = (req: Request, res: Response, next: NextFunction) => {
-  const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
-
-  if (!req.headers.authorization) return next(new UnAuthenticatedError('invalid token'))
-
-  const result: string | JwtPayload = jwt.verify(req.headers.authorization?.split(' ')[1], jwtSecret)
   
-  if ((typeof result === "string")) return next(new UnAuthenticatedError('invalid token'))
-  if (!result.email) return next(new UnAuthenticatedError('invalid token')) 
+  const JWTemail = ExtractEmailFromJWT(req)
+  if (!JWTemail) return next(new UnAuthenticatedError('invalid token'))
   
   // ** Check the (email/user) exist  in database or not ;
   userModel
     .findOne({
-      email: result.email,
+      email: JWTemail,
     })
     .exec()
     .then((userDoc) => {
@@ -141,7 +152,7 @@ const signOut = (req: Request, res: Response, next: NextFunction) => {
         }).json({
           status: 200,
           success: true,
-          message: "token User time expires In " + expiresIn,
+          message: "logOut",
           token: token,
         });
       } else {
@@ -154,19 +165,14 @@ const signOut = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
-  const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
-
-  if (!req.headers.authorization) return next(new UnAuthenticatedError('invalid token'))
-
-  const result: string | JwtPayload = jwt.verify(req.headers.authorization?.split(' ')[1], jwtSecret)
   
-  if ((typeof result === "string")) return next(new UnAuthenticatedError('invalid token'))
-  if (!result.email) return next(new UnAuthenticatedError('invalid token')) 
+  const JWTemail = ExtractEmailFromJWT(req)
+  if (!JWTemail) return next(new UnAuthenticatedError('invalid token'))
   
-  // ** Check the (email/user) exist  in database or not ;
+  // ** Check the (email) exist  in database or not ;
   userModel
     .findOne({
-      email: result.email,
+      email: JWTemail,
     })
     .exec()
     .then((userDoc) => {

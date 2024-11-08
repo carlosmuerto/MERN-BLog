@@ -28,10 +28,16 @@ const slice = createSlice({
       }
       return state
     },
+    removeCredentials: (
+      state,
+    ) => {
+      state = null
+      return state
+    },
   },
 })
 
-export const { setCredentials } = slice.actions
+export const { setCredentials, removeCredentials } = slice.actions
 
 export default slice.reducer
 

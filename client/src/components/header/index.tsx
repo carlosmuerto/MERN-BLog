@@ -1,34 +1,53 @@
-import { Link, /* useNavigate */ } from "@tanstack/react-router";
+import { Link /* useNavigate */, useNavigate } from "@tanstack/react-router";
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 import Logo from "../logo";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, } from "../../redux/authSlice";
-// import { useDispatch } from "react-redux";
+import {
+  removeCredentials,
+  selectCurrentUser,
+} from "../../redux/authSlice";
+import AuthAPI from "../../services/Auth";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 // type Props = {}
 
 const Header = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const currentUser = useSelector(selectCurrentUser);
-  // const [registerUser, /*{ isLoading, isSuccess, error, isError , data: user  }*/] = AuthAPI.useSignInMutation()
+  const [
+    registerSignOut,
+    {
+      isLoading: isSignOutLoading,
+      isSuccess: isSignOutSuccess,
+      isError: isSignOutError,
+      error: SignOutError,
+    },
+  ] = AuthAPI.useSignOutMutation();
+
+  useEffect(() => {
+    if (currentUser && currentUser.token) {
+      if (isSignOutSuccess) {
+        dispatch(removeCredentials());
+        navigate({ to: "/" });
+      }
+      if (isSignOutError) {
+        console.log(SignOutError)
+      }
+    }
+  }, [SignOutError, currentUser, dispatch, isSignOutError, isSignOutSuccess, navigate]);
+
   // const navigate = useNavigate()
   // const dispatch = useDispatch()
 
   const handleSignout = () => {
-
-    fetch('/api/auth/currentUser', {
-      method: 'get',
-      headers: {
-        "Authorization": `Bearer ${currentUser?.token}`
-      }
-    }).then(res => {
-      console.log(res)
-      res.json().then((body) => console.log(body)).catch((err) => console.log(err))
-      
-    })
-      .catch((err) => console.log(err));
-
+    if (currentUser && currentUser.token) {
+      registerSignOut(currentUser.token);
+    }
   };
 
   return (
@@ -56,19 +75,21 @@ const Header = () => {
           <Dropdown
             arrowIcon={false}
             inline
-            label={ <Avatar alt='user' img={currentUser.profileImg || ""} rounded /> }
+            label={
+              <Avatar alt="user" img={currentUser.profileImg || ""} rounded />
+            }
           >
             <Dropdown.Header>
-              <span className='block text-sm'>@{currentUser.username}</span>
-              <span className='block text-sm font-medium truncate'>
+              <span className="block text-sm">@{currentUser.username}</span>
+              <span className="block text-sm font-medium truncate">
                 {currentUser.email}
               </span>
             </Dropdown.Header>
-            <Link to={'/dashboard'}>
+            <Link to={"/dashboard"}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
+            <Dropdown.Item disabled={isSignOutLoading} onClick={handleSignout}>Sign out</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/signIn">
