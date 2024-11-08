@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import { PersistGate } from "redux-persist/integration/react";
+import ThemeProvider from "./components/themeProvider";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -26,7 +27,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <RouterProvider router={router} />
+          <ThemeProvider>
+            <RouterProvider router={router} />
+          </ThemeProvider>
         </PersistGate>
       </Provider>
     </StrictMode>

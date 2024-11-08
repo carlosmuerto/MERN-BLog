@@ -1,7 +1,7 @@
 import { Link /* useNavigate */, useNavigate } from "@tanstack/react-router";
 import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
 import Logo from "../logo";
 import { useSelector } from "react-redux";
 import {
@@ -11,12 +11,15 @@ import {
 import AuthAPI from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { selectDarkMode, DarkModeActions } from "../../redux/darkModeSlice";
 
 // type Props = {}
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const darkMode = useSelector(selectDarkMode)
 
   const currentUser = useSelector(selectCurrentUser);
   const [
@@ -41,14 +44,15 @@ const Header = () => {
     }
   }, [SignOutError, currentUser, dispatch, isSignOutError, isSignOutSuccess, navigate]);
 
-  // const navigate = useNavigate()
-  // const dispatch = useDispatch()
-
   const handleSignout = () => {
     if (currentUser && currentUser.token) {
       registerSignOut(currentUser.token);
     }
   };
+
+  const handleDarkModeToggle = () => {
+    dispatch(DarkModeActions.toggle())
+  }
 
   return (
     <Navbar className="border-b-2">
@@ -68,8 +72,10 @@ const Header = () => {
       </Button>
 
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray">
-          <FaMoon />
+        <Button className="w-12 h-10 hidden sm:inline" color="gray" type="button" onClick={handleDarkModeToggle}>
+          {darkMode.isActive
+            ? (<FaSun />) : (<FaMoon />)
+          }
         </Button>
         {currentUser ? (
           <Dropdown
