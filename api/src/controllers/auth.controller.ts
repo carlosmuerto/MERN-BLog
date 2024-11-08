@@ -135,25 +135,10 @@ const signOut = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then((userDoc) => {
       if (userDoc) {
-
-        const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
-
-        const expiresIn = "7d"
-        // ** This is our JWT Token
-        const token = jwt.sign(
-          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
-          jwtSecret,
-          {
-            expiresIn,
-          }
-        );
-        res.status(200).header({
-          "Authorization": `Bearer ${token}`
-        }).json({
+        res.clearCookie("Authorization").status(200).json({
           status: 200,
           success: true,
-          message: "logOut",
-          token: token,
+          message: "logOut success",
         });
       } else {
         return Promise.reject(new ValidationError("User Not Found"));
