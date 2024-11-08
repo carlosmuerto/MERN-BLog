@@ -1,12 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import AuthAPI from "../services/Auth";
 import userReducer from "./authSlice";
+import darkModeReducer from "./darkModeSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 const rootReducer = combineReducers({
   user: userReducer,
+  darkMode: darkModeReducer,
 });
 
 const persistConfig = {
