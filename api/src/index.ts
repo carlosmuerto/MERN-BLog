@@ -1,17 +1,31 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import jwt from "jsonwebtoken"
 
 import Database from "@services/database";
 import routes from "@routes";
-import { BaseError, errorHandeler } from "@utils/error";
+import { errorHandeler } from "@utils/error";
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
 
-// most go first
-app.use(express.json())
+/// Parser
+app.use(express.json());
+
+/*
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+// Cors
+app.use(cors());
+*/
 
 // routes
 app.use("/api", routes);
@@ -31,7 +45,7 @@ app.use(errorHandeler)
 Database.run()
   .then(() => {
     app.listen(port, () => {
-      console.log(`[server]: Server is running at http://localhost:${port}`);
+      console.log(`[server]: 🗄️ Server is running at http://localhost:${port}`);
     });
   })
   .catch((err) => console.log(err));

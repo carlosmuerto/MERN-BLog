@@ -1,9 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
+import AuthAPI, { APIErros } from "../../services/Auth";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../redux/authSlice";
 
 type SignUpInputs = {
   username: string;
@@ -12,7 +15,6 @@ type SignUpInputs = {
 };
 
 const SignUp = () => {
-
   const {
     register,
     handleSubmit,
@@ -20,57 +22,45 @@ const SignUp = () => {
     formState: { errors },
   } = useForm<SignUpInputs>();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const onSubmit: SubmitHandler<SignUpInputs> = async (e: SignUpInputs) => {
-    setIsLoading(true);
-    fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(e),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
+  const [
+    registerUser,
+    { isLoading, isSuccess, error, isError , data: token },
+  ] = AuthAPI.useSignUpMutation();
+
+  const onSubmit: SubmitHandler<SignUpInputs> = async (e) => registerUser(e);
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("token")
+      console.log(token)
+      dispatch(setCredentials(token))
+      navigate({ to: "/" });
+    }
+  }, [isSuccess, navigate, token, dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      const errorData = (error as APIErros)
+      console.log("in ", error);
+      const emptyMessageStack = true;
+      for (const entry in errorData.messageStack) {
+        if (entry == "username" || entry == "email" || entry == "password") {
+          setError(entry, {
+            message: errorData.messageStack[entry],
+          });
         }
-        return Promise.reject(response);
-      })
-      .then((_responseJson) => {
-        // all good, token is ready
-        navigate({ to: "/signIn" });
-
-      })
-      .catch((response) => {
-        // good conection bad response
-        // 3. get error messages, if any
-        response.json().then((errorJson: any) => {
-          const emptyMessageStack = true;
-          for (const entry in errorJson.messageStack) {
-            if (
-              entry == "username" ||
-              entry == "email" ||
-              entry == "password"
-            ) {
-              setError(entry, {
-                message: errorJson.messageStack[entry],
-              });
-            }
-          }
-          if (emptyMessageStack) {
-            setError("root", {
-              message: errorJson.message,
-            });
-          }
+      }
+      if (emptyMessageStack) {
+        setError("root", {
+          message: errorData.message,
         });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+      }
+      setError("root", { message: errorData.message });
+    }
+  }, [isError, error, setError]);
 
   return (
     <div className="min-h-screen mt-20">
@@ -112,7 +102,7 @@ const SignUp = () => {
                 id="username"
               />
               <span className="text-sm text-red-500 mt-5">
-                {errors.email && <p>{errors.email.message}</p>}
+                {errors.username && <p>{errors.username.message}</p>}
               </span>
             </div>
             <div className="">

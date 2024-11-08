@@ -1,8 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-type Props = {};
-
-const Logo = (_props: Props) => {
+const Logo = () => {
   return (
     <Link
       to="/"

@@ -1,12 +1,55 @@
-import { Link } from "@tanstack/react-router";
-import { Button, Navbar, TextInput } from "flowbite-react";
+import { Link /* useNavigate */, useNavigate } from "@tanstack/react-router";
+import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 import Logo from "../logo";
+import { useSelector } from "react-redux";
+import {
+  removeCredentials,
+  selectCurrentUser,
+} from "../../redux/authSlice";
+import AuthAPI from "../../services/Auth";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 // type Props = {}
 
 const Header = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const currentUser = useSelector(selectCurrentUser);
+  const [
+    registerSignOut,
+    {
+      isLoading: isSignOutLoading,
+      isSuccess: isSignOutSuccess,
+      isError: isSignOutError,
+      error: SignOutError,
+    },
+  ] = AuthAPI.useSignOutMutation();
+
+  useEffect(() => {
+    if (currentUser && currentUser.token) {
+      if (isSignOutSuccess) {
+        dispatch(removeCredentials());
+        navigate({ to: "/" });
+      }
+      if (isSignOutError) {
+        console.log(SignOutError)
+      }
+    }
+  }, [SignOutError, currentUser, dispatch, isSignOutError, isSignOutSuccess, navigate]);
+
+  // const navigate = useNavigate()
+  // const dispatch = useDispatch()
+
+  const handleSignout = () => {
+    if (currentUser && currentUser.token) {
+      registerSignOut(currentUser.token);
+    }
+  };
+
   return (
     <Navbar className="border-b-2">
       <Logo />
@@ -28,26 +71,55 @@ const Header = () => {
         <Button className="w-12 h-10 hidden sm:inline" color="gray">
           <FaMoon />
         </Button>
-        <Link to="/signIn">
-          <Button>Sign In</Button>
-        </Link>
+        {currentUser ? (
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar alt="user" img={currentUser.profileImg || ""} rounded />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">@{currentUser.username}</span>
+              <span className="block text-sm font-medium truncate">
+                {currentUser.email}
+              </span>
+            </Dropdown.Header>
+            <Link to={"/dashboard"}>
+              <Dropdown.Item>Profile</Dropdown.Item>
+            </Link>
+            <Dropdown.Divider />
+            <Dropdown.Item disabled={isSignOutLoading} onClick={handleSignout}>Sign out</Dropdown.Item>
+          </Dropdown>
+        ) : (
+          <Link to="/signIn">
+            <Button>Sign In</Button>
+          </Link>
+        )}
+
         <Navbar.Toggle className="" />
       </div>
       <Navbar.Collapse>
         <Link className="" to="/">
           {({ isActive }) => (
-						<Navbar.Link active={isActive} as={'div'}>Home</Navbar.Link>
-					)}
+            <Navbar.Link active={isActive} as={"div"}>
+              Home
+            </Navbar.Link>
+          )}
         </Link>
         <Link className="" to="/about">
           {({ isActive }) => (
-						<Navbar.Link active={isActive} as={'div'}>About</Navbar.Link>
-					)}
+            <Navbar.Link active={isActive} as={"div"}>
+              About
+            </Navbar.Link>
+          )}
         </Link>
         <Link className="" to="/projects">
           {({ isActive }) => (
-						<Navbar.Link active={isActive} as={'div'}>Projects</Navbar.Link>
-					)}
+            <Navbar.Link active={isActive} as={"div"}>
+              Projects
+            </Navbar.Link>
+          )}
         </Link>
       </Navbar.Collapse>
 

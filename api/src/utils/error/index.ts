@@ -16,6 +16,13 @@ export class BaseError extends Error {
 }
 
 // 404 error class
+export class UnAuthenticatedError extends BaseError {
+  constructor(message: string) {
+    super(message, 401);
+  }
+}
+
+// 404 error class
 export class NotFoundError extends BaseError {
   constructor(message: string) {
     super(message, 404);
@@ -38,6 +45,8 @@ export const errorHandeler = (err: Error, req: Request, res: Response, next: Nex
       messageStack: Object.fromEntries(err.messageStack),
     });
   } else {
+    console.log('[server] "UNKNOW UNHNADLE ERROR')
+    console.log(err)
     res.status(500).json({
       message: "UNKNOW UNHNADLE ERROR",
     });

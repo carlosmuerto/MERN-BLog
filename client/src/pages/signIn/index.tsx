@@ -1,9 +1,12 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import { useState } from "react";
+import AuthAPI, {APIErros} from "../../services/Auth";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../redux/authSlice";
 
 type SignInInputs = {
 	email: string,
@@ -11,6 +14,10 @@ type SignInInputs = {
 };
 
 const SignIn = () => {
+  const [registerUser, { isLoading, isSuccess, error, isError , data: token  }] = AuthAPI.useSignInMutation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
+
 	const {
     register,
     handleSubmit,
@@ -18,54 +25,23 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<SignInInputs>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const onSubmit: SubmitHandler<SignInInputs> = async (e) => registerUser(e);
 
-  const onSubmit: SubmitHandler<SignInInputs> = async (e: SignInInputs) => {
-    setIsLoading(true);
-    fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(e),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(response);
-      })
-      .then((responseJson) => {
-        // all good, token is ready
-        console.log(responseJson);
-      })
-      .catch((response) => {
-        // good conection bad response
-        // 3. get error messages, if any
-        response.json().then((errorJson: any) => {
-          const emptyMessageStack = true;
-          for (const entry in errorJson.messageStack) {
-            if (
-              entry == "email" ||
-              entry == "password"
-            ) {
-              setError(entry, {
-                message: errorJson.messageStack[entry],
-              });
-            }
-          }
-          if (emptyMessageStack) {
-            setError("root", {
-              message: errorJson.message,
-            });
-          }
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setCredentials(token))
+      navigate({ to: "/" });
+    }
+  }, [isSuccess, navigate, token, dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      console.log("in ",error)
+
+      setError("root",{message: (error as APIErros).message})
+    }
+  }, [isError, error, setError]);
+
 
 
 	return (
