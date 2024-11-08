@@ -3,7 +3,6 @@ import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-// import { useEffect, useState } from "react";
 import AuthAPI, {SignInErros} from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -15,7 +14,7 @@ type SignInInputs = {
 };
 
 const SignIn = () => {
-  const [registerUser, { isLoading, isSuccess, error, isError , data: user  }] = AuthAPI.useSignInMutation()
+  const [registerUser, { isLoading, isSuccess, error, isError , data: token  }] = AuthAPI.useSignInMutation()
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -30,12 +29,10 @@ const SignIn = () => {
 
   useEffect(() => {
     if (isSuccess) {
-	 		console.log("page")
-      console.log(user)
-      dispatch(setCredentials(user))
+      dispatch(setCredentials(token))
       navigate({ to: "/" });
     }
-  }, [isSuccess, navigate, user, dispatch]);
+  }, [isSuccess, navigate, token, dispatch]);
 
   useEffect(() => {
     if (isError) {

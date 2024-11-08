@@ -1,17 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { jwtDecode } from "jwt-decode";
-
-// Auth User Model
-
-export type User = {
-  id: string;
-  username: string;
-  email: string;
-  profileImg: string | null;
-  token: string;
-  password: string;
-}
+// import { jwtDecode } from "jwt-decode";
 
 export type SignInErros = {
   statusCode: number;
@@ -29,18 +18,15 @@ export const AuthAPI = createApi({
     baseUrl: "/api",
   }),
   endpoints: (builder) => ({
-    signIn: builder.mutation<User, { email: string; password: string }>({
+    signIn: builder.mutation<string, { email: string; password: string }>({
       query: ({ email, password }) => ({
         url: "/auth/signin",
         method: "POST",
         body: { email, password },
       }),
       transformResponse: (response: { token: string }) => {
-        const decoded = jwtDecode(response.token)
-        return {
-          token: response.token,
-          ...decoded
-        } as  User
+        // const decoded = jwtDecode(response.token)
+        return response.token
       },
       transformErrorResponse: (err) => {
         if ('data' in err) {
@@ -50,18 +36,15 @@ export const AuthAPI = createApi({
       },
     }),
 
-		signUp: builder.mutation<User, { email: string; username: string; password: string }>({
+		signUp: builder.mutation<string, { email: string; username: string; password: string }>({
       query: ({ email, username, password }) => ({
         url: "/auth/signUp",
         method: "POST",
         body: { email, username, password },
       }),
       transformResponse: (response: { token: string }) => {
-        const decoded = jwtDecode(response.token)
-        return {
-          token: response.token,
-          ...decoded
-        } as  User
+        // const decoded = jwtDecode(response.token)
+        return response.token
       },
       transformErrorResponse: (err) => {
         if ('data' in err) {

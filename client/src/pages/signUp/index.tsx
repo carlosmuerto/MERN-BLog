@@ -27,19 +27,19 @@ const SignUp = () => {
 
   const [
     registerUser,
-    { isLoading, isSuccess, error, isError , data: user },
+    { isLoading, isSuccess, error, isError , data: token },
   ] = AuthAPI.useSignUpMutation();
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (e) => registerUser(e);
 
   useEffect(() => {
     if (isSuccess) {
-      console.log("page")
-      console.log(user)
-      dispatch(setCredentials(user))
+      console.log("token")
+      console.log(token)
+      dispatch(setCredentials(token))
       navigate({ to: "/" });
     }
-  }, [isSuccess, navigate, user, dispatch]);
+  }, [isSuccess, navigate, token, dispatch]);
 
   useEffect(() => {
     if (isError) {
@@ -64,7 +64,6 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen mt-20">
-      {user?.username}
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
         <div className="left-side flex-1">
           <Link

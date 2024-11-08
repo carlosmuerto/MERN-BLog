@@ -17,7 +17,7 @@ const Header = () => {
 
   const handleSignout = () => {
 
-    fetch('/api/currentUser', {
+    fetch('/api/auth/currentUser', {
       method: 'get',
       headers: {
         "Authorization": `Bearer ${currentUser?.token}`
