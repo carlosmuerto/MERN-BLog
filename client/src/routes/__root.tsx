@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import Header from '../components/header'
 import FooterComp from '../components/footer'
+import { AppRouteContext } from '../components/appRouterProvider'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<AppRouteContext>()({
   component: () => (
     <React.Fragment>
       <Header />

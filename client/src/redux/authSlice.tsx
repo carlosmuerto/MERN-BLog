@@ -10,7 +10,7 @@ export type User = {
   profileImg: string | null;
 }
 
-type AuthState = User & {token: string} | null
+export type AuthState = User & {token: string} | null
 
 const slice = createSlice({
   name: 'USER',
