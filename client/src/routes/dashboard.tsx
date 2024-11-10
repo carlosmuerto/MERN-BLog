@@ -1,15 +1,14 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import Dashboard from '../pages/dashboard'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import Dashboard from "../pages/dashboard";
 
-
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ context }) => {
-    console.log(context)
     if (!context.AuthState) {
+      console.log("Enter")
       throw redirect({
-        to: '/signIn',
+        to: "/signIn",
       });
     }
   },
-  component: Dashboard
-})
+  component: Dashboard,
+});

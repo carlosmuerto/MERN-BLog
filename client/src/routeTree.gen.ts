@@ -22,6 +22,7 @@ const SignUpLazyImport = createFileRoute('/signUp')()
 const SignInLazyImport = createFileRoute('/signIn')()
 const ProjectsLazyImport = createFileRoute('/projects')()
 const AboutLazyImport = createFileRoute('/about')()
+const DashboardProfileLazyImport = createFileRoute('/dashboard/profile')()
 
 // Create/Update Routes
 
@@ -60,6 +61,14 @@ const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const DashboardProfileLazyRoute = DashboardProfileLazyImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRoute,
+} as any).lazy(() =>
+  import('./routes/dashboard/profile.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -107,44 +116,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpLazyImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileLazyImport
+      parentRoute: typeof DashboardImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardRouteChildren {
+  DashboardProfileLazyRoute: typeof DashboardProfileLazyRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardProfileLazyRoute: DashboardProfileLazyRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/about': typeof AboutLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/signIn': typeof SignInLazyRoute
   '/signUp': typeof SignUpLazyRoute
+  '/dashboard/profile': typeof DashboardProfileLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/about': typeof AboutLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/signIn': typeof SignInLazyRoute
   '/signUp': typeof SignUpLazyRoute
+  '/dashboard/profile': typeof DashboardProfileLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/about': typeof AboutLazyRoute
   '/projects': typeof ProjectsLazyRoute
   '/signIn': typeof SignInLazyRoute
   '/signUp': typeof SignUpLazyRoute
+  '/dashboard/profile': typeof DashboardProfileLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/about' | '/projects' | '/signIn' | '/signUp'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/about'
+    | '/projects'
+    | '/signIn'
+    | '/signUp'
+    | '/dashboard/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/about' | '/projects' | '/signIn' | '/signUp'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/about'
+    | '/projects'
+    | '/signIn'
+    | '/signUp'
+    | '/dashboard/profile'
   id:
     | '__root__'
     | '/'
@@ -153,12 +198,13 @@ export interface FileRouteTypes {
     | '/projects'
     | '/signIn'
     | '/signUp'
+    | '/dashboard/profile'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   AboutLazyRoute: typeof AboutLazyRoute
   ProjectsLazyRoute: typeof ProjectsLazyRoute
   SignInLazyRoute: typeof SignInLazyRoute
@@ -167,7 +213,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   AboutLazyRoute: AboutLazyRoute,
   ProjectsLazyRoute: ProjectsLazyRoute,
   SignInLazyRoute: SignInLazyRoute,
@@ -198,7 +244,10 @@ export const routeTree = rootRoute
       "filePath": "index.tsx"
     },
     "/dashboard": {
-      "filePath": "dashboard.tsx"
+      "filePath": "dashboard.tsx",
+      "children": [
+        "/dashboard/profile"
+      ]
     },
     "/about": {
       "filePath": "about.lazy.tsx"
@@ -211,6 +260,10 @@ export const routeTree = rootRoute
     },
     "/signUp": {
       "filePath": "signUp.lazy.tsx"
+    },
+    "/dashboard/profile": {
+      "filePath": "dashboard/profile.lazy.tsx",
+      "parent": "/dashboard"
     }
   }
 }

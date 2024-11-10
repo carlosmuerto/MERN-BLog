@@ -120,7 +120,7 @@ const Header = () => {
             </Navbar.Link>
           )}
         </Link>
-        <Link className="" to="/projects">
+        <Link className="" to="/dashboard/profile">
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
               Projects
