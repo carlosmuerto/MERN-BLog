@@ -13,6 +13,16 @@ export type AppRouteContext = {
 	AuthState: AuthState
 }
 
+
+const redirectToLogInBeforeLoad = ({context}:{context:AppRouteContext}) => {
+  if (!context.AuthState) {
+    console.log("Enter")
+    throw redirect({
+      to: "/signIn",
+    });
+  }
+}
+
 const rootRoute = createRootRouteWithContext<AppRouteContext>()({
   component: Root,
 });
@@ -36,28 +46,14 @@ const projectsRoute = createRoute({
 });
 
 const dashboardRoute = createRoute({
-  beforeLoad: ({ context }) => {
-    if (!context.AuthState) {
-      console.log("Enter")
-      throw redirect({
-        to: "/signIn",
-      });
-    }
-  },
+  beforeLoad: redirectToLogInBeforeLoad,
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: Dashboard,
 });
 
 const profileRoute = createRoute({  
-  beforeLoad: ({ context }) => {
-    if (!context.AuthState) {
-      console.log("Enter")
-      throw redirect({
-        to: "/signIn",
-      });
-    }
-  },
+  beforeLoad: redirectToLogInBeforeLoad,
   getParentRoute: () => rootRoute,
   path: "/dashboard/profile",
   component: Profile,

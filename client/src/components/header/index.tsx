@@ -4,12 +4,8 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import Logo from "../logo";
 import { useSelector } from "react-redux";
-import {
-  removeCredentials,
-  selectCurrentUser,
-} from "../../redux/authSlice";
+import { removeCredentials, selectCurrentUser } from "../../redux/authSlice";
 import AuthAPI from "../../services/Auth";
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { selectDarkMode, DarkModeActions } from "../../redux/darkModeSlice";
 
@@ -19,40 +15,27 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const darkMode = useSelector(selectDarkMode)
+  const darkMode = useSelector(selectDarkMode);
 
   const currentUser = useSelector(selectCurrentUser);
   const [
     registerSignOut,
     {
-      isLoading: isSignOutLoading,
-      isSuccess: isSignOutSuccess,
-      isError: isSignOutError,
-      error: SignOutError,
+      isLoading: isSignOutLoading
     },
   ] = AuthAPI.useSignOutMutation();
 
-  useEffect(() => {
-    if (currentUser && currentUser.token) {
-      if (isSignOutSuccess) {
-        dispatch(removeCredentials());
-        navigate({ to: "/" });
-      }
-      if (isSignOutError) {
-        console.log(SignOutError)
-      }
-    }
-  }, [SignOutError, currentUser, dispatch, isSignOutError, isSignOutSuccess, navigate]);
-
   const handleSignout = () => {
     if (currentUser && currentUser.token) {
+      dispatch(removeCredentials());
       registerSignOut(currentUser.token);
+      navigate({ to: "/" });
     }
   };
 
   const handleDarkModeToggle = () => {
-    dispatch(DarkModeActions.toggle())
-  }
+    dispatch(DarkModeActions.toggle());
+  };
 
   return (
     <Navbar className="border-b-2">
@@ -70,12 +53,15 @@ const Header = () => {
       <Button className="w-12 h-10 lg:hidden" color="gray">
         <AiOutlineSearch />
       </Button>
-      
+
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" type="button" onClick={handleDarkModeToggle}>
-          {darkMode.isActive
-            ? (<FaSun />) : (<FaMoon />)
-          }
+        <Button
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+          type="button"
+          onClick={handleDarkModeToggle}
+        >
+          {darkMode.isActive ? <FaSun /> : <FaMoon />}
         </Button>
         {currentUser ? (
           <Dropdown
@@ -95,7 +81,9 @@ const Header = () => {
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item disabled={isSignOutLoading} onClick={handleSignout}>Sign out</Dropdown.Item>
+            <Dropdown.Item disabled={isSignOutLoading} onClick={handleSignout}>
+              Sign out
+            </Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/signIn">
@@ -105,15 +93,8 @@ const Header = () => {
 
         <Navbar.Toggle className="" />
       </div>
-      
+
       <Navbar.Collapse>
-        <Link className="" to="/">
-          {({ isActive }) => (
-            <Navbar.Link active={isActive} as={"div"}>
-              Home
-            </Navbar.Link>
-          )}
-        </Link>
         <Link className="" to="/about">
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
@@ -121,13 +102,22 @@ const Header = () => {
             </Navbar.Link>
           )}
         </Link>
-        <Link className="" to="/dashboard">
+        <Link className="" to="/projects">
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
               Projects
             </Navbar.Link>
           )}
         </Link>
+        {currentUser && (
+          <Link className="" to="/dashboard">
+            {({ isActive }) => (
+              <Navbar.Link active={isActive} as={"div"}>
+                Dashboard
+              </Navbar.Link>
+            )}
+          </Link>
+        )}
       </Navbar.Collapse>
 
       {/*
