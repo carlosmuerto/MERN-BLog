@@ -6,7 +6,7 @@ import Projects from "./pages/projects";
 import Dashboard from "./pages/dashboard";
 import SignIn from "./pages/signIn";
 import SignUp from "./pages/signUp";
-import Profile from "./pages/profile";
+import Profile from "./pages/dashboard/profile";
 import { AuthState } from "./redux/authSlice";
 
 export type AppRouteContext = {

@@ -11,7 +11,7 @@ const Dashboard = () => {
       <div className="md:w-56">
         <DashboardSidebar />
       </div>
-      <div>{some(childMatches) ? <Outlet /> : <DashboardBody />}</div>
+      {some(childMatches) ? <Outlet /> : <DashboardBody />}
     </div>
   );
 };

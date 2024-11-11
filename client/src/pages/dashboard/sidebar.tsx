@@ -31,13 +31,14 @@ const DashboardSidebar = () => {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <Link className="" to="/dashboard/profile">
+          <Link className="" to="/dashboard/profile" >
             {({ isActive }) => (
               <Sidebar.Item
                 active={isActive}
                 icon={HiUser}
                 label={"USER"}
                 labelColor="dark"
+                as={"div"}
               >
                 Prifile
               </Sidebar.Item>
