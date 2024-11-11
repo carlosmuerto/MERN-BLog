@@ -1,13 +1,13 @@
 import { createRootRouteWithContext, createRoute, redirect } from "@tanstack/react-router";
-import Root from "../components/root";
-import Home from "../pages/home";
-import About from "../pages/about";
-import Projects from "../pages/projects";
-import Dashboard from "../pages/dashboard";
-import SignIn from "../pages/signIn";
-import SignUp from "../pages/signUp";
-import Profile from "../pages/profile";
-import { AuthState } from "../redux/authSlice";
+import Root from "./components/root";
+import Home from "./pages/home";
+import About from "./pages/about";
+import Projects from "./pages/projects";
+import Dashboard from "./pages/dashboard";
+import SignIn from "./pages/signIn";
+import SignUp from "./pages/signUp";
+import Profile from "./pages/profile";
+import { AuthState } from "./redux/authSlice";
 
 export type AppRouteContext = {
 	AuthState: AuthState
@@ -52,10 +52,9 @@ const dashboardRoute = createRoute({
   component: Dashboard,
 });
 
-const profileRoute = createRoute({  
-  beforeLoad: redirectToLogInBeforeLoad,
-  getParentRoute: () => rootRoute,
-  path: "/dashboard/profile",
+const profileRoute = createRoute({
+  getParentRoute: () => dashboardRoute,
+  path: "/profile",
   component: Profile,
 });
 
@@ -75,8 +74,9 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
   projectsRoute,
-  dashboardRoute,
-  profileRoute,
+  dashboardRoute.addChildren([
+    profileRoute
+  ]),
   signInRoute,
   signUpRoute,
 ]);

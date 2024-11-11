@@ -1,9 +1,19 @@
-type Props = {}
+import { Outlet, useChildMatches } from "@tanstack/react-router";
+import DashboardSidebar from "./sidebar";
+import { some } from "lodash";
+import DashboardBody from "./body";
 
-const Dashboard = (props: Props) => {
+const Dashboard = () => {
+  const childMatches = useChildMatches();
+
   return (
-    <div>Dashboard</div>
-  )
-}
+    <div className="min-h-screen flex flex-col md:flex-row">
+      <div className="md:w-56">
+        <DashboardSidebar />
+      </div>
+      <div>{some(childMatches) ? <Outlet /> : <DashboardBody />}</div>
+    </div>
+  );
+};
 
 export default Dashboard;
