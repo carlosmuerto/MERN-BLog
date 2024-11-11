@@ -4,7 +4,8 @@ import { Outlet } from "@tanstack/react-router";
 import FooterComp from "./footer";
 
 const TanStackRouterDevtools =
-  process.env.NODE_ENV === "production"
+  // eslint-disable-next-line no-constant-condition, no-constant-binary-expression
+  true || (process.env.NODE_ENV === "production")
     ? () => null // Render nothing in production
     : React.lazy(() =>
         // Lazy load in development
