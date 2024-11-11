@@ -4,7 +4,7 @@ import { persistor, store } from "./redux/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ThemeProvider from "./components/themeProvider";
-import AppRouterProvider from "./components/appRouterProvider";
+import App from "./App";
 
 // Render the app
 const rootElement = document.getElementById("root")!;
@@ -15,7 +15,7 @@ if (!rootElement.innerHTML) {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider>
-            <AppRouterProvider />
+            <App />
           </ThemeProvider>
         </PersistGate>
       </Provider>

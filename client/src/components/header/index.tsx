@@ -70,7 +70,7 @@ const Header = () => {
       <Button className="w-12 h-10 lg:hidden" color="gray">
         <AiOutlineSearch />
       </Button>
-
+      
       <div className="flex gap-2 md:order-2">
         <Button className="w-12 h-10 hidden sm:inline" color="gray" type="button" onClick={handleDarkModeToggle}>
           {darkMode.isActive
@@ -91,7 +91,7 @@ const Header = () => {
                 {currentUser.email}
               </span>
             </Dropdown.Header>
-            <Link to={"/dashboard"}>
+            <Link to={"/dashboard/profile"}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
@@ -105,6 +105,7 @@ const Header = () => {
 
         <Navbar.Toggle className="" />
       </div>
+      
       <Navbar.Collapse>
         <Link className="" to="/">
           {({ isActive }) => (
@@ -120,7 +121,7 @@ const Header = () => {
             </Navbar.Link>
           )}
         </Link>
-        <Link className="" to="/dashboard/profile">
+        <Link className="" to="/dashboard">
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
               Projects
