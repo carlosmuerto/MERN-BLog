@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    "baseUrl": "./src/",
+    "paths": {
+      "@s/utils/*": ["./server/utils/*"],
+      "@s/models/*": ["./server/models/*"],
+      "@s/services/*": ["./server/services/*"],
+      "@s/routes/*": ["./server/routes/*"],
+      "@s/routes": ["./server/routes"],
+      "@s/controllers/*": ["./server/controllers/*"],
+      "@s/controllers": ["./server/controllers"],
+    }
+
+  },
+  "include": ["src"]
+}

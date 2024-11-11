@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+      "@utils": ["./Utils"],
+      "@pages/*": ["./pages/*"],
+      "@redux/*": ["./redux/*"],
+      "@components/*": ["./components/*"],
+      "@services/*": ["./services/*"],
+      "@assets/*": ["./assets/*"],
+    }
+  }
+}
