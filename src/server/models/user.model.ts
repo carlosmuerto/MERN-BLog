@@ -46,8 +46,8 @@ userSchema.pre("save", async function (next: HookNextFunction) {
     const salt = await bcrypt.genSalt(HASH_ROUNDS);
     thisObj.password = await bcrypt.hash(thisObj.password, salt);
     return next();
-  } catch (e:any) {
-    return next(e);
+  } catch (e) {
+    return next(e as Error);
   }
 });
 

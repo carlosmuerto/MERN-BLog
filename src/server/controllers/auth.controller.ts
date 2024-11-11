@@ -33,7 +33,7 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .then((userDoc) => {
       console.log(`[mongodb]: ${userDoc.username} signed Up successfully`);
 
-      const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
+      const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
 
         // ** This is our JWT Token
         const token = jwt.sign(
@@ -44,6 +44,7 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
           }
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {password, ...userData} = toIuserObj(userDoc)
 
         
@@ -61,7 +62,7 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .catch((err: mongoose.Error.ValidationError) => {
       // handle validation Errors
       console.log(`[mongodb]: ValidationError`);
-      const errorMessages: Map<string, String> = new Map();
+      const errorMessages: Map<string, string> = new Map();
       for (const errKey in err.errors) {
         errorMessages.set(errKey, err.errors[errKey].message);
       }
@@ -94,7 +95,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     .then(async (userDoc) => {
       if (userDoc && (await userDoc.validatePassword(password))) {
 
-        const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
+        const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
 
         // ** This is our JWT Token
         const token = jwt.sign(
@@ -105,6 +106,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
           }
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {password, ...userData} = toIuserObj(userDoc)
 
         res.status(200).header({
@@ -166,7 +168,7 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
     .then((userDoc) => {
       if (userDoc) {
 
-        const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
+        const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
 
         const expiresIn = "7d"
         // ** This is our JWT Token
