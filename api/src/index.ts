@@ -16,17 +16,6 @@ const jwtSecret = process.env.JWTSECRET || "jwt-test-token";
 /// Parser
 app.use(express.json());
 
-/*
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
-// Cors
-app.use(cors());
-*/
-
 // routes
 app.use("/api", routes);
 
