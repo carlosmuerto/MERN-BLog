@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ExtractEmailFromJWT = (req: Request) => {
+const ExtractIdFromJWT = (req: Request) => {
   const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
 
   if (!req.headers.authorization) return null;
@@ -23,9 +23,10 @@ const ExtractEmailFromJWT = (req: Request) => {
   }
 
   if (typeof result === "string") return null;
-  if (!result.email) return null;
+  
+  if (!result.userData.id) return null;
 
-  return result.email;
+  return result.userData.id;
 };
 
 const generateUserWithToken = (userDoc: IUser) => {
@@ -132,14 +133,12 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const signOut = (req: Request, res: Response, next: NextFunction) => {
-  const JWTemail = ExtractEmailFromJWT(req);
-  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
+  const JWTuId = ExtractIdFromJWT(req);
+  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
 
   // ** Check the (email/user) exist  in database or not ;
   userModel
-    .findOne({
-      email: JWTemail,
-    })
+    .findById(JWTuId)
     .exec()
     .then((userDoc) => {
       if (userDoc) {
@@ -158,17 +157,11 @@ const signOut = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
-  const JWTemail = ExtractEmailFromJWT(req);
-
-  console.log(req)
-  console.log(JWTemail)
-  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
-
-  // ** Check the (email) exist  in database or not ;
+  const JWTuId = ExtractIdFromJWT(req);
+  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
+  // ** Check the ID exist  in database or not ;
   userModel
-    .findOne({
-      email: JWTemail,
-    })
+    .findById(JWTuId)
     .exec()
     .then((userDoc) => {
       if (userDoc) {
@@ -199,15 +192,11 @@ const UpdateAuthCredentials = (
   res: Response,
   next: NextFunction
 ) => {
-  const JWTemail = ExtractEmailFromJWT(req);
-  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
-
-  // ** Check the (email) exist  in database or not ;
-  // ** Check the (email) exist  in database or not ;
+  const JWTuId = ExtractIdFromJWT(req);
+  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
+  // ** Check the ID exist  in database or not ;
   userModel
-    .findOne({
-      email: JWTemail,
-    })
+    .findById(JWTuId)
     .exec()
     .then((userDoc) => {
       if (userDoc) {
