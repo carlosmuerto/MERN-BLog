@@ -50,9 +50,21 @@ userSchema.pre("save", async function (next: HookNextFunction) {
     return next(e as Error);
   }
 });
-
+/*
+userSchema.pre("findOneAndUpdate", async function () {
+  console.log("I am working on findOneAndUpdate");
+  const docToUpdate = await this.model.findOne(this.getQuery());
+  console.log(docToUpdate); // The document that `findOneAndUpdate()` will modify
+  docToUpdate.username = docToUpdate + "+pre";
+  docToUpdate.save(function (err:Error) {
+    if (!err) {
+      console.log("Document Updated");
+    }
+  });
+});
+*/
 // password validation method
-userSchema.methods.validatePassword = async function (pass = '') {
+userSchema.methods.validatePassword = async function (pass = "") {
   return await bcrypt.compare(pass, this.password);
 };
 

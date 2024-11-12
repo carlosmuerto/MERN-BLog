@@ -21,12 +21,11 @@ const ExtractIdFromJWT = (req: Request) => {
   } catch {
     return null;
   }
-
   if (typeof result === "string") return null;
-  
-  if (!result.userData.id) return null;
 
-  return result.userData.id;
+  if (!result.id) return null;
+
+  return result.id;
 };
 
 const generateUserWithToken = (userDoc: IUser) => {
@@ -44,7 +43,7 @@ const generateUserWithToken = (userDoc: IUser) => {
   return {
     user: userData,
     token,
-    expiresIn
+    expiresIn,
   };
 };
 
@@ -57,7 +56,7 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .then((userDoc) => {
       console.log(`[mongodb]: ${userDoc.username} signed Up successfully`);
 
-      const {user, token} = generateUserWithToken(userDoc)
+      const { user, token } = generateUserWithToken(userDoc);
 
       res
         .status(200)
@@ -107,7 +106,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then(async (userDoc) => {
       if (userDoc && (await userDoc.validatePassword(password))) {
-        const {user, token} = generateUserWithToken(userDoc)
+        const { user, token } = generateUserWithToken(userDoc);
 
         res
           .status(200)
@@ -165,7 +164,7 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then((userDoc) => {
       if (userDoc) {
-        const {user, token, expiresIn} = generateUserWithToken(userDoc)
+        const { user, token, expiresIn } = generateUserWithToken(userDoc);
         res
           .status(200)
           .header({
@@ -196,33 +195,34 @@ const UpdateAuthCredentials = (
   if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
   // ** Check the ID exist  in database or not ;
   userModel
-    .findByIdAndUpdate(
-      JWTuId,
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          profileImg: req.body.profileImg,
-          password: req.body.password,
-        },
-      },
-      { new: true }
-    )
+    .findById(JWTuId)
     .exec()
-    .then((updatedUser) => {
-      if (updatedUser) {
-        const {user, token, expiresIn} = generateUserWithToken(updatedUser)
-        res
-          .status(200)
-          .header({
-            Authorization: `Bearer ${token}`,
+    .then((userDoc) => {
+      if (userDoc) {
+        if (req.body.username) userDoc.username = req.body.username;
+        if (req.body.email) userDoc.email = req.body.email;
+        if (req.body.profileImg) userDoc.profileImg = req.body.profileImg;
+        if (req.body.password) userDoc.password = req.body.password;
+        userDoc
+          .save()
+          .then((userDocUpdated) => {
+            const { user, token, expiresIn } =
+              generateUserWithToken(userDocUpdated);
+            res
+              .status(200)
+              .header({
+                Authorization: `Bearer ${token}`,
+              })
+              .json({
+                status: 200,
+                success: true,
+                message: "Update Success, token User time expires In " + expiresIn,
+                user,
+                token,
+              });
           })
-          .json({ 
-            status: 200,
-            success: true,
-            message: "token User time expires In " + expiresIn,
-            user,
-            token,
+          .catch((err) => {
+            next(err);
           });
       } else {
         return Promise.reject(new ValidationError("User Not Found"));
