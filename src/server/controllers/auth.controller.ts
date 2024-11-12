@@ -37,7 +37,7 @@ const generateUserWithToken = (userDoc: IUser) => {
 
   const expiresIn = "7d";
   // ** This is our JWT Token
-  const token = jwt.sign({ userData }, jwtSecret, {
+  const token = jwt.sign({ ...userData }, jwtSecret, {
     expiresIn,
   });
 
@@ -196,44 +196,33 @@ const UpdateAuthCredentials = (
   if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
   // ** Check the ID exist  in database or not ;
   userModel
-    .findById(JWTuId)
+    .findByIdAndUpdate(
+      JWTuId,
+      {
+        $set: {
+          username: req.body.username,
+          email: req.body.email,
+          profileImg: req.body.profileImg,
+          password: req.body.password,
+        },
+      },
+      { new: true }
+    )
     .exec()
-    .then((userDoc) => {
-      if (userDoc) {
-        userModel
-          .findByIdAndUpdate(
-            userDoc._id,
-            {
-              $set: {
-                username: req.body.username,
-                email: req.body.email,
-                profilePicture: req.body.profilePicture,
-                password: req.body.password,
-              },
-            },
-            { new: true }
-          )
-          .then((updatedUser) => {
-            if (updatedUser) {
-              const {user, token, expiresIn} = generateUserWithToken(updatedUser)
-              res
-                .status(200)
-                .header({
-                  Authorization: `Bearer ${token}`,
-                })
-                .json({
-                  status: 200,
-                  success: true,
-                  message: "token User time expires In " + expiresIn,
-                  user,
-                  token,
-                });
-            } else {
-              return Promise.reject(new ValidationError("User Not Found"));
-            }
+    .then((updatedUser) => {
+      if (updatedUser) {
+        const {user, token, expiresIn} = generateUserWithToken(updatedUser)
+        res
+          .status(200)
+          .header({
+            Authorization: `Bearer ${token}`,
           })
-          .catch((err) => {
-            next(err);
+          .json({ 
+            status: 200,
+            success: true,
+            message: "token User time expires In " + expiresIn,
+            user,
+            token,
           });
       } else {
         return Promise.reject(new ValidationError("User Not Found"));
