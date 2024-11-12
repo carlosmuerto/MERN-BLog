@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import ViteExpress from "vite-express";
 
 import Database from "@s/services/database";

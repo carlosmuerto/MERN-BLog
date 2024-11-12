@@ -24,7 +24,7 @@ const userSchema = new Schema<IUser>(
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profileImg: {type: String, default: null}
+    profileImg: { type: String, default: null },
   },
   {
     timestamps: true,
@@ -52,18 +52,27 @@ userSchema.pre("save", async function (next: HookNextFunction) {
 });
 
 // password validation method
-userSchema.methods.validatePassword = async function (pass: string) {
+userSchema.methods.validatePassword = async function (pass = '') {
   return await bcrypt.compare(pass, this.password);
 };
 
 // export interface comatible object
-const toIuserObj = (userdoc:IUser) => ({
+const toIuserObj = (
+  userdoc: IUser
+): {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  profileImg: string | null;
+} => ({
+  id: userdoc.id,
   username: userdoc.username,
   email: userdoc.email,
   password: userdoc.password,
-  profileImg: userdoc.profileImg
-})
+  profileImg: userdoc.profileImg,
+});
 
 export default mongoose.model<IUser>("User", userSchema);
 
-export {toIuserObj}
+export { toIuserObj };

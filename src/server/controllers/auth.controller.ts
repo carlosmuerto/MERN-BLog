@@ -1,4 +1,4 @@
-import userModel, { toIuserObj } from "@s/models/user.model";
+import userModel, { IUser, toIuserObj } from "@s/models/user.model";
 import { UnAuthenticatedError, ValidationError } from "@s/utils/error";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
@@ -7,22 +7,45 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-
 const ExtractEmailFromJWT = (req: Request) => {
   const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
 
-  if (!req.headers.authorization) return null
+  if (!req.headers.authorization) return null;
 
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) return null
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return null;
 
-  const result: string | JwtPayload = jwt.verify(token, jwtSecret)
-  
-  if ((typeof result === "string")) return null
-  if (!result.email) return null
+  let result: string | JwtPayload | null = null;
+  try {
+    result = jwt.verify(token, jwtSecret);
+  } catch {
+    return null;
+  }
 
-  return result.email
-}
+  if (typeof result === "string") return null;
+  if (!result.email) return null;
+
+  return result.email;
+};
+
+const generateUserWithToken = (userDoc: IUser) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...userData } = toIuserObj(userDoc);
+
+  const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
+
+  const expiresIn = "7d";
+  // ** This is our JWT Token
+  const token = jwt.sign({ userData }, jwtSecret, {
+    expiresIn,
+  });
+
+  return {
+    user: userData,
+    token,
+    expiresIn
+  };
+};
 
 const signUp = (req: Request, res: Response, next: NextFunction) => {
   const newUser = new userModel(req.body);
@@ -33,30 +56,19 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .then((userDoc) => {
       console.log(`[mongodb]: ${userDoc.username} signed Up successfully`);
 
-      const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
+      const {user, token} = generateUserWithToken(userDoc)
 
-        // ** This is our JWT Token
-        const token = jwt.sign(
-          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
-          jwtSecret,
-          {
-            expiresIn: "1d",
-          }
-        );
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {password, ...userData} = toIuserObj(userDoc)
-
-        
-
-        res.status(200).header({
-          "Authorization": `Bearer ${token}`
-        }).json({
+      res
+        .status(200)
+        .header({
+          Authorization: `Bearer ${token}`,
+        })
+        .json({
           status: 200,
           success: true,
           message: "Sign Up successfully",
-          user: userData,
-          token: token,
+          user,
+          token,
         });
     })
     .catch((err: mongoose.Error.ValidationError) => {
@@ -94,32 +106,24 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then(async (userDoc) => {
       if (userDoc && (await userDoc.validatePassword(password))) {
+        const {user, token} = generateUserWithToken(userDoc)
 
-        const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
-
-        // ** This is our JWT Token
-        const token = jwt.sign(
-          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
-          jwtSecret,
-          {
-            expiresIn: "1d",
-          }
-        );
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {password, ...userData} = toIuserObj(userDoc)
-
-        res.status(200).header({
-          "Authorization": `Bearer ${token}`
-        }).json({
-          status: 200,
-          success: true,
-          message: "login success",
-          user: userData,
-          token: token,
-        });
+        res
+          .status(200)
+          .header({
+            Authorization: `Bearer ${token}`,
+          })
+          .json({
+            status: 200,
+            success: true,
+            message: "login success",
+            user,
+            token,
+          });
       } else {
-        return Promise.reject(new ValidationError("Email or Password Incorrect"));
+        return Promise.reject(
+          new ValidationError("Email or Password Incorrect")
+        );
       }
     })
     .catch((err) => {
@@ -128,10 +132,9 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const signOut = (req: Request, res: Response, next: NextFunction) => {
-  
-  const JWTemail = ExtractEmailFromJWT(req)
-  if (!JWTemail) return next(new UnAuthenticatedError('invalid token'))
-  
+  const JWTemail = ExtractEmailFromJWT(req);
+  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
+
   // ** Check the (email/user) exist  in database or not ;
   userModel
     .findOne({
@@ -152,13 +155,15 @@ const signOut = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       next(err);
     });
-}
+};
 
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
-  
-  const JWTemail = ExtractEmailFromJWT(req)
-  if (!JWTemail) return next(new UnAuthenticatedError('invalid token'))
-  
+  const JWTemail = ExtractEmailFromJWT(req);
+
+  console.log(req)
+  console.log(JWTemail)
+  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
+
   // ** Check the (email) exist  in database or not ;
   userModel
     .findOne({
@@ -167,26 +172,19 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then((userDoc) => {
       if (userDoc) {
-
-        const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
-
-        const expiresIn = "7d"
-        // ** This is our JWT Token
-        const token = jwt.sign(
-          { id: userDoc._id, email: userDoc.email, username: userDoc.username },
-          jwtSecret,
-          {
-            expiresIn,
-          }
-        );
-        res.status(200).header({
-          "Authorization": `Bearer ${token}`
-        }).json({
-          status: 200,
-          success: true,
-          message: "token User time expires In " + expiresIn,
-          token: token,
-        });
+        const {user, token, expiresIn} = generateUserWithToken(userDoc)
+        res
+          .status(200)
+          .header({
+            Authorization: `Bearer ${token}`,
+          })
+          .json({
+            status: 200,
+            success: true,
+            message: "token User time expires In " + expiresIn,
+            user,
+            token,
+          });
       } else {
         return Promise.reject(new ValidationError("User Not Found"));
       }
@@ -194,8 +192,75 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       next(err);
     });
-}
+};
 
-const controllers = { signUp, signIn, signOut, currentUser };
+const UpdateAuthCredentials = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const JWTemail = ExtractEmailFromJWT(req);
+  if (!JWTemail) return next(new UnAuthenticatedError("invalid token"));
+
+  // ** Check the (email) exist  in database or not ;
+  // ** Check the (email) exist  in database or not ;
+  userModel
+    .findOne({
+      email: JWTemail,
+    })
+    .exec()
+    .then((userDoc) => {
+      if (userDoc) {
+        userModel
+          .findByIdAndUpdate(
+            userDoc._id,
+            {
+              $set: {
+                username: req.body.username,
+                email: req.body.email,
+                profilePicture: req.body.profilePicture,
+                password: req.body.password,
+              },
+            },
+            { new: true }
+          )
+          .then((updatedUser) => {
+            if (updatedUser) {
+              const {user, token, expiresIn} = generateUserWithToken(updatedUser)
+              res
+                .status(200)
+                .header({
+                  Authorization: `Bearer ${token}`,
+                })
+                .json({
+                  status: 200,
+                  success: true,
+                  message: "token User time expires In " + expiresIn,
+                  user,
+                  token,
+                });
+            } else {
+              return Promise.reject(new ValidationError("User Not Found"));
+            }
+          })
+          .catch((err) => {
+            next(err);
+          });
+      } else {
+        return Promise.reject(new ValidationError("User Not Found"));
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const controllers = {
+  signUp,
+  signIn,
+  signOut,
+  UpdateAuthCredentials,
+  currentUser,
+};
 
 export default controllers;
