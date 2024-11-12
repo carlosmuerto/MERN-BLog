@@ -90,6 +90,27 @@ export const AuthAPI = createApi({
         return err;
       },
     }),
+
+		Update: builder.mutation<string, {email?: string; username?: string; profileImg?: string; password?: string, token: string}>({
+      query: ({ token, ...user }) => ({
+        url: "/Update",
+        method: "POST",
+        body: { ...user },
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }),
+      transformResponse: (response: APIResponseBase & { token: string }) => {
+        // const decoded = jwtDecode(response.token)
+        return response.token
+      },
+      transformErrorResponse: (err) => {
+        if ('data' in err) {
+          return err.data as APIErros;
+        }
+        return err;
+      },
+    }),
   }),
 });
 
