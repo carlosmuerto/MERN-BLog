@@ -6,8 +6,13 @@ import { useDispatch } from "react-redux";
 
 import userDefaultProfileImage from "@assets/user_profile_icon.png";
 import AuthAPI, { APIErros } from "@/services/Auth";
-import { selectCurrentUser, setCredentials } from "@redux/authSlice";
+import {
+  removeCredentials,
+  selectCurrentUser,
+  setCredentials,
+} from "@redux/authSlice";
 import { HiInformationCircle } from "react-icons/hi";
+import { useNavigate } from "@tanstack/react-router";
 
 type ProfileUpdateInputs = {
   username: string;
@@ -16,11 +21,30 @@ type ProfileUpdateInputs = {
 };
 
 const Profile = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
 
-  const [registerUser, { isLoading, isSuccess, error, isError, data: token }] =
-    AuthAPI.useUpdateMutation();
+  const [
+    registerUserUpdate,
+    {
+      isLoading: isUpdateLoading,
+      isSuccess: isUpdateSuccess,
+      error: UpdateError,
+      isError: isUpdateError,
+      data: token,
+    },
+  ] = AuthAPI.useUpdateMutation();
+
+  const [
+    registerDelete,
+    {
+      isLoading: isDeleteLoading,
+      isSuccess: isDeleteSuccess,
+      error: deleteError,
+      isError: isDeleteError
+    },
+  ] = AuthAPI.useDeleteMutation();
 
   const {
     register,
@@ -30,18 +54,25 @@ const Profile = () => {
   } = useForm<ProfileUpdateInputs>();
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isUpdateSuccess) {
       dispatch(setCredentials(token));
     }
-  }, [isSuccess, token, dispatch]);
+  }, [isUpdateSuccess, token, dispatch]);
 
   useEffect(() => {
-    if (isError) {
-      console.log("in ", error);
+    if (isUpdateError) {
+      console.log("in ", UpdateError);
 
-      setError("root", { message: (error as APIErros).message });
+      setError("root", { message: (UpdateError as APIErros).message });
     }
-  }, [isError, error, setError]);
+  }, [isUpdateError, UpdateError, setError]);
+
+  useEffect(() => {
+    if (isDeleteSuccess) {
+      dispatch(removeCredentials());
+      navigate({ to: "/" });
+    }
+  }, [isDeleteSuccess, token, dispatch, navigate]);
 
   if (!currentUser) {
     return <div>USER NULL ERROR</div>;
@@ -49,12 +80,18 @@ const Profile = () => {
 
   const onSubmit: SubmitHandler<ProfileUpdateInputs> = async (e) => {
     const { email, password, username } = e;
-    return registerUser({
+    return registerUserUpdate({
       token: currentUser.token,
       email,
       password,
       username,
     });
+  };
+
+  const handleDeleteAccount = () => {
+    if (currentUser && currentUser.token) {
+      registerDelete(currentUser.token);
+    }
   };
 
   return (
@@ -97,8 +134,8 @@ const Profile = () => {
         <span className="text-sm text-red-500 mt-5">
           {errors.password && <p>{errors.password.message}</p>}
         </span>
-        <Button type="submit" outline disabled={isLoading}>
-          {isLoading ? "loading" : "UpDate"}
+        <Button type="submit" outline disabled={isUpdateLoading}>
+          {isUpdateLoading ? "loading" : "UpDate"}
         </Button>
         {errors.root && (
           <Alert color="failure" icon={HiInformationCircle}>
@@ -106,18 +143,25 @@ const Profile = () => {
           </Alert>
         )}
 
-        {(isSuccess && !isLoading) && (
+        {!isDeleteLoading && isDeleteError && (
+          <Alert color="failure" icon={HiInformationCircle}>
+            <span className="font-medium">{(deleteError as APIErros)?.message ?? deleteError}</span>
+          </Alert>
+        )}
+
+        {isUpdateSuccess && !isUpdateLoading && (
           <Alert color="success" icon={HiInformationCircle}>
             <span className="font-medium">Update Success</span>
           </Alert>
         )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
-        <span onClick={() => {}} className="cursor-pointer">
+        <span onClick={handleDeleteAccount} className="cursor-pointer">
           Delete Account
         </span>
         <></>
       </div>
+      
     </div>
   );
 };
