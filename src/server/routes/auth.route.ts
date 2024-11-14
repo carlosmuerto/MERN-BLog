@@ -8,3 +8,4 @@ authRoute.post('/signIn', AuthController.signIn);
 authRoute.post('/signOut', AuthController.signOut);
 authRoute.post('/Update', AuthController.UpdateAuthCredentials);
 authRoute.get('/currentUser', AuthController.currentUser);
+authRoute.delete('/Delete', AuthController.DeleteCurrentAccount);
