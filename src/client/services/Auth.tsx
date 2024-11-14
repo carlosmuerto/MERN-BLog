@@ -76,6 +76,22 @@ export const AuthAPI = createApi({
       },
     }),
 
+    delete: builder.mutation<string, string>({
+      query: ( token ) => ({
+        url: "/delete",
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }),
+      transformErrorResponse: (err) => {
+        if ('data' in err) {
+          return err.data as APIErros;
+        }
+        return err;
+      },
+    }),
+
     currentUser: builder.query<string, APIResponseBase & {token: string}>({
       query: ({token}) => ({
         url: "/currentUser",

@@ -216,7 +216,8 @@ const UpdateAuthCredentials = (
               .json({
                 status: 200,
                 success: true,
-                message: "Update Success, token User time expires In " + expiresIn,
+                message:
+                  "Update Success, token User time expires In " + expiresIn,
                 user,
                 token,
               });
@@ -233,11 +234,39 @@ const UpdateAuthCredentials = (
     });
 };
 
+const DeleteCurrentAccount = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const JWTuId = ExtractIdFromJWT(req);
+  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
+  // ** Check the ID exist  in database or not ;
+  userModel
+    .findByIdAndDelete(JWTuId)
+    .exec()
+    .then((userDoc) => {
+      if (userDoc) {
+        res.clearCookie("Authorization").status(200).json({
+          status: 200,
+          success: true,
+          message: `Delete user: ${userDoc.username} success`,
+        });
+      } else {
+        return Promise.reject(new ValidationError("User Not Found"));
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 const controllers = {
   signUp,
   signIn,
   signOut,
   UpdateAuthCredentials,
+  DeleteCurrentAccount,
   currentUser,
 };
 
