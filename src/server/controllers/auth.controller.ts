@@ -1,4 +1,4 @@
-import userModel, { IUser, toIuserObj } from "@s/models/user.model";
+import userModel, { IUser } from "@s/models/user.model";
 import { UnAuthenticatedError, ValidationError } from "@s/utils/error";
 import { generateUserWithToken } from "@s/services/authentication"
 import { NextFunction, Request, Response } from "express";
@@ -14,6 +14,7 @@ const authenticatedUserResponse = (res: Response, userDoc: IUser, message: strin
     })
     .cookie('access_token', token, {
       httpOnly: true,
+      sameSite: "lax"
     })
     .json({
       status: 200,
@@ -85,7 +86,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 const signOut = (req: Request, res: Response, next: NextFunction) => {
 
   if (!res.locals.authenticatedUserDoc) return next(new UnAuthenticatedError("invalid token"));
-  const userDoc = res.locals.authenticatedUserDoc
+  // const userDoc = res.locals.authenticatedUserDoc
 
   res.clearCookie('access_token').clearCookie("Authorization").status(200).json({
     status: 200,
