@@ -8,17 +8,27 @@ import SignIn from "@pages/signIn";
 import SignUp from "@pages/signUp";
 import Profile from "@pages/dashboard/profile";
 import { AuthState } from "@redux/authSlice";
+import { Error } from "mongoose";
+import newPost from "@/pages/dashboard/newPost";
 
 export type AppRouteContext = {
 	AuthState: AuthState
 }
 
-
 const redirectToLogInBeforeLoad = ({context}:{context:AppRouteContext}) => {
   if (!context.AuthState) {
-    console.log("Enter")
     throw redirect({
       to: "/signIn",
+    });
+  }
+}
+
+const redirectToPofileBeforeLoad = ({context}:{context:AppRouteContext}) => {
+  if (!context.AuthState) throw new Error("USER NOT DEFINED");
+  
+  if (!context.AuthState.isAdmin) {
+    throw redirect({
+      to: "/dashboard/profile",
     });
   }
 }
@@ -52,6 +62,13 @@ const dashboardRoute = createRoute({
   component: Dashboard,
 });
 
+const newPostRoute = createRoute({
+  beforeLoad: redirectToPofileBeforeLoad,
+  getParentRoute: () => dashboardRoute,
+  path: "/new-post",
+  component: newPost,
+});
+
 const profileRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   path: "/profile",
@@ -75,7 +92,8 @@ export const routeTree = rootRoute.addChildren([
   aboutRoute,
   projectsRoute,
   dashboardRoute.addChildren([
-    profileRoute
+    profileRoute,
+    newPostRoute
   ]),
   signInRoute,
   signUpRoute,
