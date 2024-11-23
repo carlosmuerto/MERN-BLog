@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import ViteExpress from "vite-express";
+import cookieParser from 'cookie-parser';
 
 import Database from "@s/services/database";
 import routes from "@s/routes";
@@ -13,6 +14,7 @@ const port = process.env.VITE_PORT || 3000;
 
 /// Parser
 app.use(express.json());
+app.use(cookieParser());
 
 // routes
 app.use("/api", routes);

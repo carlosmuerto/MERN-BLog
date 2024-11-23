@@ -1,50 +1,32 @@
-import userModel, { IUser, toIuserObj } from "@s/models/user.model";
+import userModel, { IUser } from "@s/models/user.model";
 import { UnAuthenticatedError, ValidationError } from "@s/utils/error";
+import { generateUserWithToken } from "@s/services/authentication";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
 
-dotenv.config();
+const authenticatedUserResponse = (
+  res: Response,
+  userDoc: IUser,
+  message: string
+) => {
+  const { user, token } = generateUserWithToken(userDoc);
 
-const ExtractIdFromJWT = (req: Request) => {
-  const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
-
-  if (!req.headers.authorization) return null;
-
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return null;
-
-  let result: string | JwtPayload | null = null;
-  try {
-    result = jwt.verify(token, jwtSecret);
-  } catch {
-    return null;
-  }
-  if (typeof result === "string") return null;
-
-  if (!result.id) return null;
-
-  return result.id;
-};
-
-const generateUserWithToken = (userDoc: IUser) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password, ...userData } = toIuserObj(userDoc);
-
-  const jwtSecret = process.env.VITE_JWTSECRET || "jwt-test-token";
-
-  const expiresIn = "7d";
-  // ** This is our JWT Token
-  const token = jwt.sign({ ...userData }, jwtSecret, {
-    expiresIn,
-  });
-
-  return {
-    user: userData,
-    token,
-    expiresIn,
-  };
+  res
+    .status(200)
+    .header({
+      Authorization: `Bearer ${token}`,
+    })
+    .cookie("access_token", token, {
+      sameSite: "none",
+      secure: true,
+    })
+    .json({
+      status: 200,
+      success: true,
+      message,
+      user,
+      token,
+    });
 };
 
 const signUp = (req: Request, res: Response, next: NextFunction) => {
@@ -55,21 +37,7 @@ const signUp = (req: Request, res: Response, next: NextFunction) => {
     .save()
     .then((userDoc) => {
       console.log(`[mongodb]: ${userDoc.username} signed Up successfully`);
-
-      const { user, token } = generateUserWithToken(userDoc);
-
-      res
-        .status(200)
-        .header({
-          Authorization: `Bearer ${token}`,
-        })
-        .json({
-          status: 200,
-          success: true,
-          message: "Sign Up successfully",
-          user,
-          token,
-        });
+      authenticatedUserResponse(res, userDoc, "Sign Up successfully");
     })
     .catch((err: mongoose.Error.ValidationError) => {
       // handle validation Errors
@@ -106,20 +74,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     .exec()
     .then(async (userDoc) => {
       if (userDoc && (await userDoc.validatePassword(password))) {
-        const { user, token } = generateUserWithToken(userDoc);
-
-        res
-          .status(200)
-          .header({
-            Authorization: `Bearer ${token}`,
-          })
-          .json({
-            status: 200,
-            success: true,
-            message: "login success",
-            user,
-            token,
-          });
+        authenticatedUserResponse(res, userDoc, "Sign In successfully");
       } else {
         return Promise.reject(
           new ValidationError("Email or Password Incorrect")
@@ -131,59 +86,17 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-const signOut = (req: Request, res: Response, next: NextFunction) => {
-  const JWTuId = ExtractIdFromJWT(req);
-  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
-
-  // ** Check the (email/user) exist  in database or not ;
-  userModel
-    .findById(JWTuId)
-    .exec()
-    .then((userDoc) => {
-      if (userDoc) {
-        res.clearCookie("Authorization").status(200).json({
-          status: 200,
-          success: true,
-          message: "logOut success",
-        });
-      } else {
-        return Promise.reject(new ValidationError("User Not Found"));
-      }
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
-
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
-  const JWTuId = ExtractIdFromJWT(req);
-  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
-  // ** Check the ID exist  in database or not ;
-  userModel
-    .findById(JWTuId)
-    .exec()
-    .then((userDoc) => {
-      if (userDoc) {
-        const { user, token, expiresIn } = generateUserWithToken(userDoc);
-        res
-          .status(200)
-          .header({
-            Authorization: `Bearer ${token}`,
-          })
-          .json({
-            status: 200,
-            success: true,
-            message: "token User time expires In " + expiresIn,
-            user,
-            token,
-          });
-      } else {
-        return Promise.reject(new ValidationError("User Not Found"));
-      }
-    })
-    .catch((err) => {
-      next(err);
-    });
+  if (!res.locals.authenticatedUserDoc)
+    return next(new UnAuthenticatedError("invalid token"));
+  const userDoc = res.locals.authenticatedUserDoc;
+
+  const { expiresIn } = generateUserWithToken(userDoc);
+  authenticatedUserResponse(
+    res,
+    userDoc,
+    "token User time expires In " + expiresIn
+  );
 };
 
 const UpdateAuthCredentials = (
@@ -191,47 +104,50 @@ const UpdateAuthCredentials = (
   res: Response,
   next: NextFunction
 ) => {
-  const JWTuId = ExtractIdFromJWT(req);
-  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
-  // ** Check the ID exist  in database or not ;
-  userModel
-    .findById(JWTuId)
-    .exec()
-    .then((userDoc) => {
-      if (userDoc) {
-        if (req.body.username) userDoc.username = req.body.username;
-        if (req.body.email) userDoc.email = req.body.email;
-        if (req.body.profileImg) userDoc.profileImg = req.body.profileImg;
-        if (req.body.password) userDoc.password = req.body.password;
-        userDoc
-          .save()
-          .then((userDocUpdated) => {
-            const { user, token, expiresIn } =
-              generateUserWithToken(userDocUpdated);
-            res
-              .status(200)
-              .header({
-                Authorization: `Bearer ${token}`,
-              })
-              .json({
-                status: 200,
-                success: true,
-                message:
-                  "Update Success, token User time expires In " + expiresIn,
-                user,
-                token,
-              });
-          })
-          .catch((err) => {
-            next(err);
-          });
-      } else {
-        return Promise.reject(new ValidationError("User Not Found"));
-      }
+  if (!res.locals.authenticatedUserDoc)
+    return next(new UnAuthenticatedError("invalid token"));
+  const userDoc = res.locals.authenticatedUserDoc;
+
+  if (req.body.username) userDoc.username = req.body.username;
+  if (req.body.email) userDoc.email = req.body.email;
+  if (req.body.profileImg) userDoc.profileImg = req.body.profileImg;
+  if (req.body.password) userDoc.password = req.body.password;
+  userDoc
+    .save()
+    .then((userDocUpdated) => {
+      const { expiresIn } = generateUserWithToken(userDocUpdated);
+      authenticatedUserResponse(
+        res,
+        userDocUpdated,
+        "Update Success, token User time expires In " + expiresIn
+      );
     })
     .catch((err) => {
       next(err);
     });
+};
+
+const logOutResponse = (res: Response, message: string) => {
+
+  res
+  .status(200)
+  .clearCookie("access_token", {
+    sameSite: "none",
+    secure: true,
+  })
+  .json({
+    status: 200,
+    success: true,
+    message,
+  });
+};
+
+const signOut = (req: Request, res: Response, next: NextFunction) => {
+  if (!res.locals.authenticatedUserDoc)
+    return next(new UnAuthenticatedError("invalid token"));
+  // const userDoc = res.locals.authenticatedUserDoc
+
+  logOutResponse(res, "logOut success")
 };
 
 const DeleteCurrentAccount = (
@@ -239,19 +155,17 @@ const DeleteCurrentAccount = (
   res: Response,
   next: NextFunction
 ) => {
-  const JWTuId = ExtractIdFromJWT(req);
-  if (!JWTuId) return next(new UnAuthenticatedError("invalid token"));
+  if (!res.locals.authenticatedUserDoc)
+    return next(new UnAuthenticatedError("invalid token"));
+  const userDoc = res.locals.authenticatedUserDoc;
   // ** Check the ID exist  in database or not ;
   userModel
-    .findByIdAndDelete(JWTuId)
+    .findByIdAndDelete(userDoc.id)
     .exec()
-    .then((userDoc) => {
-      if (userDoc) {
-        res.clearCookie("Authorization").status(200).json({
-          status: 200,
-          success: true,
-          message: `Delete user: ${userDoc.username} success`,
-        });
+    .then((deletedUserDoc) => {
+      if (deletedUserDoc) {
+
+        logOutResponse(res, `Delete user: ${deletedUserDoc.username} success`)
       } else {
         return Promise.reject(new ValidationError("User Not Found"));
       }
