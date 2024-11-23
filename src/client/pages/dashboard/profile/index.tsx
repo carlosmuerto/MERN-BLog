@@ -94,6 +94,14 @@ const Profile = () => {
     }
   };
 
+  const handleNewPost = () => {
+    if (currentUser && currentUser.token) {
+      navigate({ to: "/" });
+    }
+  };
+
+  
+
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center font-semibold text-3xl">profile</h1>
@@ -134,9 +142,16 @@ const Profile = () => {
         <span className="text-sm text-red-500 mt-5">
           {errors.password && <p>{errors.password.message}</p>}
         </span>
-        <Button type="submit" outline disabled={isUpdateLoading}>
-          {isUpdateLoading ? "loading" : "UpDate"}
+        <Button type="submit" outline disabled={isUpdateLoading || isDeleteLoading}>
+          {isUpdateLoading || isDeleteLoading ? "loading" : "UpDate"}
         </Button>
+
+        {currentUser.isAdmin && (
+          <Button type="button" outline disabled={isUpdateLoading || isDeleteLoading} onClick={handleNewPost}>
+            {isUpdateLoading || isDeleteLoading ? "loading" : "New Post"}
+          </Button>
+        )}
+
         {errors.root && (
           <Alert color="failure" icon={HiInformationCircle}>
             <span className="font-medium">{errors.root.message}</span>

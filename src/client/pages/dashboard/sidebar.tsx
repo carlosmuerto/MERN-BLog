@@ -36,8 +36,8 @@ const DashboardSidebar = () => {
               <Sidebar.Item
                 active={isActive}
                 icon={HiUser}
-                label={"USER"}
-                labelColor="dark"
+                label={currentUser?.isAdmin?"ADMIN":"USER"}
+                labelColor={currentUser?.isAdmin?"indigo":"dark"}
                 as={"div"}
               >
                 Prifile

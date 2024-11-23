@@ -15,6 +15,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   profileImg: string | null;
+  isAdmin: boolean
   validatePassword(password: string): boolean;
 }
 
@@ -25,6 +26,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profileImg: { type: String, default: null },
+    isAdmin:  { type: Boolean, required: true, default: false },
   },
   {
     timestamps: true,
@@ -50,19 +52,7 @@ userSchema.pre("save", async function (next: HookNextFunction) {
     return next(e as Error);
   }
 });
-/*
-userSchema.pre("findOneAndUpdate", async function () {
-  console.log("I am working on findOneAndUpdate");
-  const docToUpdate = await this.model.findOne(this.getQuery());
-  console.log(docToUpdate); // The document that `findOneAndUpdate()` will modify
-  docToUpdate.username = docToUpdate + "+pre";
-  docToUpdate.save(function (err:Error) {
-    if (!err) {
-      console.log("Document Updated");
-    }
-  });
-});
-*/
+
 // password validation method
 userSchema.methods.validatePassword = async function (pass = "") {
   return await bcrypt.compare(pass, this.password);
@@ -76,12 +66,14 @@ const toIuserObj = (
   username: string;
   email: string;
   password: string;
+  isAdmin: boolean;
   profileImg: string | null;
 } => ({
   id: userdoc.id,
   username: userdoc.username,
   email: userdoc.email,
   password: userdoc.password,
+  isAdmin: userdoc.isAdmin,
   profileImg: userdoc.profileImg,
 });
 
