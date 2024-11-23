@@ -1,7 +1,6 @@
 import userModel, { IUser, toIuserObj } from "@s/models/user.model";
 import { UnAuthenticatedError, ValidationError } from "@s/utils/error";
 import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 

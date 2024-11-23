@@ -66,12 +66,14 @@ const toIuserObj = (
   username: string;
   email: string;
   password: string;
+  isAdmin: boolean;
   profileImg: string | null;
 } => ({
   id: userdoc.id,
   username: userdoc.username,
   email: userdoc.email,
   password: userdoc.password,
+  isAdmin: userdoc.isAdmin,
   profileImg: userdoc.profileImg,
 });
 
