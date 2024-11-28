@@ -17,8 +17,9 @@ const authenticatedUserResponse = (
       Authorization: `Bearer ${token}`,
     })
     .cookie("access_token", token, {
+      httpOnly: true,
       sameSite: "none",
-      secure: true,
+      secure: false,
     })
     .json({
       status: 200,
@@ -88,7 +89,7 @@ const signIn = (req: Request, res: Response, next: NextFunction) => {
 
 const currentUser = (req: Request, res: Response, next: NextFunction) => {
   if (!res.locals.authenticatedUserDoc)
-    return next(new UnAuthenticatedError("invalid token"));
+    return next(new UnAuthenticatedError("Un Authenticated"));
   const userDoc = res.locals.authenticatedUserDoc;
 
   const { expiresIn } = generateUserWithToken(userDoc);
@@ -132,8 +133,9 @@ const logOutResponse = (res: Response, message: string) => {
   res
   .status(200)
   .clearCookie("access_token", {
+    httpOnly: true,
     sameSite: "none",
-    secure: true,
+    secure: false,
   })
   .json({
     status: 200,
