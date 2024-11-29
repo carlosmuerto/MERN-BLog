@@ -15,7 +15,7 @@ export class BaseError extends Error {
   }
 }
 
-// 400 validation error class / bad request
+// 400 validation error class
 export class ValidationError extends BaseError {
   constructor(message: string, messageStack: Map<string, string> = new Map()) {
     super(message, 400);
@@ -23,6 +23,13 @@ export class ValidationError extends BaseError {
   }
 }
 
+// 400 bad request
+export class BadRequestError extends BaseError {
+  constructor(message: string, messageStack: Map<string, string> = new Map()) {
+    super(message, 400);
+    this.messageStack = messageStack;
+  }
+}
 // 401 error class
 export class UnAuthenticatedError extends BaseError {
   constructor(message = "Un Authenticated") {

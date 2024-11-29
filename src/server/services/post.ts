@@ -21,8 +21,8 @@ const create = async (post: PostJSONObJ): Promise<IPost> => {
 }
 
 
-const queryAll = (page = 0, limit = 10, pageSize = 5): Promise<IPost[]> => {
-	return postModel.find().skip(page * pageSize).limit(limit).populate("author").exec()
+const queryAll = (page = 1, pageSize = 5): Promise<IPost[]> => {
+	return postModel.find().limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
 }
 
 const PostService = {
