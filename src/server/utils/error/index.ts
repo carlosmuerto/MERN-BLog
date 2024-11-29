@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-// base error class
+// base error class (500)
 export class BaseError extends Error {
   statusCode: number;
   messageStack:  Map<string, string> ;
@@ -15,10 +15,25 @@ export class BaseError extends Error {
   }
 }
 
-// 404 error class
+// 400 validation error class / bad request
+export class ValidationError extends BaseError {
+  constructor(message: string, messageStack: Map<string, string> = new Map()) {
+    super(message, 400);
+    this.messageStack = messageStack;
+  }
+}
+
+// 401 error class
 export class UnAuthenticatedError extends BaseError {
-  constructor(message: string) {
+  constructor(message = "Un Authenticated") {
     super(message, 401);
+  }
+}
+
+// 403 error class
+export class ForbiddenError extends BaseError {
+  constructor(message = "Forbidden") {
+    super(message, 403);
   }
 }
 
@@ -26,14 +41,6 @@ export class UnAuthenticatedError extends BaseError {
 export class NotFoundError extends BaseError {
   constructor(message: string) {
     super(message, 404);
-  }
-}
-
-// validation error class
-export class ValidationError extends BaseError {
-  constructor(message: string, messageStack: Map<string, string> = new Map()) {
-    super(message, 400);
-    this.messageStack = messageStack;
   }
 }
 

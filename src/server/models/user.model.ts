@@ -14,7 +14,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  profileImg: string | null;
+  profileImg: string;
   isAdmin: boolean
   validatePassword(password: string): boolean;
 }
@@ -25,7 +25,7 @@ const userSchema = new Schema<IUser>(
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profileImg: { type: String, default: null },
+    profileImg: { type: String },
     isAdmin:  { type: Boolean, required: true, default: false },
   },
   {
@@ -67,7 +67,7 @@ const toIuserObj = (
   email: string;
   password: string;
   isAdmin: boolean;
-  profileImg: string | null;
+  profileImg: string;
 } => ({
   id: userdoc.id,
   username: userdoc.username,

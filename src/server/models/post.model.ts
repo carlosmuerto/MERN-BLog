@@ -1,20 +1,26 @@
 import mongoose, { Document, Schema } from "mongoose";
 import UserSchema, { IUser } from "@s/models/user.model";
+import userModel from "@s/models/user.model";
+import { BaseError } from "@s/utils/error";
+
+export enum categories {
+	uncategorized = "uncategorized",
+	test = "test"
+}
 
 // Ipost OBject Interface
 export interface PostJSONObJ {
-	author: {
-		id: string;
-		username: string;
-		email: string;
-		profileImg: string | null;
+	author?: {
+		id?: string;
+		username?: string;
+		profileImg?: string;
 	},
-	title: string;
-	content: string;
-	image: string | null;
-	category: String,
-	slug: String,
-
+	id?: string;
+	title?: string;
+	content?: string;
+	image?: string;
+	category?: categories,
+	// slug?: String,
 }
 
 // 1. Create an interface representing a document in MongoDB.
@@ -22,16 +28,17 @@ export interface IPost extends Document {
 	author: IUser;
 	title: string;
 	content: string;
-	image: string | null;
-	category: String,
-	slug: String,
+	image: string;
+	category: categories,
+	// slug: String,
 }
 
 // 2. Create a Schema corresponding to the document interface.
 const postSchema = new Schema<IPost>(
 	{
 		author: {
-			type: UserSchema,
+			type: mongoose.Types.ObjectId, 
+			ref: "User",
 			required: true,
 		},
 		content: {
@@ -41,22 +48,24 @@ const postSchema = new Schema<IPost>(
 		title: {
 			type: String,
 			required: true,
-			unique: true,
+			// unique: true,
 		},
 		image: {
 			type: String,
-			default:
-				'https://www.hostinger.com/tutorials/wp-content/uploads/sites/2/2021/09/how-to-write-a-blog-post.png',
 		},
 		category: {
 			type: String,
-			default: 'uncategorized',
+			required: true,
+			enum: categories,
+			default: categories.uncategorized,
 		},
+		/*
 		slug: {
 			type: String,
 			required: true,
 			unique: true,
 		},
+		*/
 	},
 	{
 		timestamps: true,
@@ -64,19 +73,18 @@ const postSchema = new Schema<IPost>(
 );
 
 
-// export interface comatible object
+// export JSON object
 const toIPostObj = (postdoc: IPost):PostJSONObJ  => ({
 	author: {
 		id: postdoc.author.id,
 		username: postdoc.author.username,
-		email: postdoc.author.email,
 		profileImg: postdoc.author.profileImg,
 	},
+	id: postdoc.id,
 	title: postdoc.title,
 	content: postdoc.content,
 	image: postdoc.image,
-	category: postdoc.category,
-	slug: postdoc.slug,
+	category: postdoc.category
 });
 
 export default mongoose.model<IPost>("Post", postSchema);
