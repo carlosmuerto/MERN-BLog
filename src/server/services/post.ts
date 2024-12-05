@@ -1,8 +1,8 @@
-import postModel, { IPost, PostJSONObJ } from "@s/models/post.model";
-import { ValidationError } from "@s/utils/error";
+import postModel, { categories, IPost, PostJSONObJ } from "@s/models/post.model";
+import { NotFoundError, ValidationError } from "@s/utils/error";
 import mongoose from "mongoose";
 
-const create = async (post: PostJSONObJ): Promise<IPost> => {
+const create = (post: PostJSONObJ): Promise<IPost> => {
 	const newPost = new postModel(post);
 	return newPost.save().then((savedPost) => {
 		if (savedPost) {
@@ -20,14 +20,36 @@ const create = async (post: PostJSONObJ): Promise<IPost> => {
 	});
 }
 
+interface postUpdatableField {
+	title?: string;
+	content?: string;
+	image?: string;
+	category?: categories,
+}
+
+const findAndUpdate = (id:string, post:postUpdatableField): Promise<IPost> => {
+	return postModel.findByIdAndUpdate(id, post).then((postDoc) => postDoc ?? Promise.reject(new NotFoundError("Post Not Found")) )
+}
+
+const findAndDelete = (id: String): Promise<IPost> => {
+	return postModel
+    .findByIdAndDelete(id)
+    .exec()
+    .then((deletedUserDoc) => deletedUserDoc ?? Promise.reject(new ValidationError("Post Not Found")));
+}
 
 const queryAll = (page = 1, pageSize = 5): Promise<IPost[]> => {
 	return postModel.find().limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
 }
 
+const queryOne = (id: String): Promise<IPost> => {
+	return postModel.findById(id).populate("author").exec().then((postDoc) => postDoc ?? Promise.reject(new NotFoundError("Post Not Found")))
+}
+
 const PostService = {
 	create,
 	queryAll,
+	queryOne,
 }
 
 export default PostService

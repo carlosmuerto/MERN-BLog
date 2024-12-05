@@ -4,7 +4,8 @@ import { adminUser, authenticateUser } from '@s/services/authentication'
 
 export const postRoute = Router();
 
-postRoute.get('', PostController.queryPosts);
+postRoute.get('', PostController.queryAllPosts);
+postRoute.get('/:PostId', PostController.queryOnePost);
 postRoute.post('/create', authenticateUser, adminUser, PostController.create);
 
 
