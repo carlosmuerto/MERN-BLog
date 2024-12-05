@@ -109,6 +109,13 @@ const Header = () => {
             </Navbar.Link>
           )}
         </Link>
+        <Link className="" to="/posts">
+          {({ isActive }) => (
+            <Navbar.Link active={isActive} as={"div"}>
+              Posts
+            </Navbar.Link>
+          )}
+        </Link>
         {currentUser && (
           <Link className="" to="/dashboard">
             {({ isActive }) => (

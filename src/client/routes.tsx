@@ -10,6 +10,8 @@ import Profile from "@pages/dashboard/profile";
 import { AuthState } from "@redux/authSlice";
 import { Error } from "mongoose";
 import newPost from "@/pages/dashboard/newPost";
+import Posts from "@/pages/posts";
+import postPage from "@/pages/posts/postPage";
 
 export type AppRouteContext = {
 	AuthState: AuthState
@@ -42,6 +44,19 @@ const indexRoute = createRoute({
   path: "/",
   component: Home,
 });
+
+const postsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/posts",
+  component: Posts,
+});
+
+const postsIdRoute = createRoute({
+  getParentRoute: () => postsRoute,
+  path: "/$postId",
+  component: postPage,
+});
+
 
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -91,6 +106,9 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
   projectsRoute,
+  postsRoute.addChildren([
+    postsIdRoute,
+  ]),
   dashboardRoute.addChildren([
     profileRoute,
     newPostRoute
