@@ -26,18 +26,29 @@ interface postUpdatableField {
 	title?: string;
 	content?: string;
 	image?: string;
-	//category?: categories,
+	category?: categories,
 }
 
-const findAndUpdate = (id:string, post:postUpdatableField): Promise<IPost> => {
-	return postModel.findByIdAndUpdate(id, post).then((postDoc) => postDoc ?? Promise.reject(new NotFoundError("Post Not Found")) )
+const findAndUpdate = (id:string, postIn:postUpdatableField): Promise<IPost> => {
+	return postModel.findById(id).populate("author").exec().then((postDoc) => {
+		if (!postDoc) return Promise.reject(new NotFoundError("Post Not Found"))
+
+		if (postIn.title) postDoc.title = postIn.title;
+		if (postIn.content) postDoc.content = postIn.content;
+		if (postIn.image) postDoc.image = postIn.image;
+		if (postIn.category) postDoc.category = postIn.category;
+
+		return postDoc.save()
+	})
 }
+
 
 const findAndDelete = (id: String): Promise<IPost> => {
 	return postModel
     .findByIdAndDelete(id)
+		.populate("author")
     .exec()
-    .then((deletedUserDoc) => deletedUserDoc ?? Promise.reject(new ValidationError("Post Not Found")));
+    .then((deletedPostDoc) => deletedPostDoc ?? Promise.reject(new ValidationError("Post Not Found")));
 }
 
 const queryAll = (page = 1, pageSize = 5): Promise<IPost[]> => {

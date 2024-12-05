@@ -3,12 +3,13 @@ import PostService from "@s/services/post";
 import { BadRequestError } from "@s/utils/error";
 import { NextFunction, Request, Response } from "express";
 
+// "title","content","image","category"
 
 const create = (req: Request, res: Response, next: NextFunction) => PostService
 	.create({
 		author: res.locals.authenticatedUserDoc,
 		...req.body,
-		category: categories.test
+		category: categories.uncategorized
 	})
 	.then((savedPost) => res.status(200).json({
 		status: 200,
@@ -21,11 +22,28 @@ const create = (req: Request, res: Response, next: NextFunction) => PostService
 	.catch((err) => next(err));
 
 
-const findPostAndDelete = (req: Request, res: Response, next: NextFunction) => {
+const findPostAndDelete = (req: Request, res: Response, next: NextFunction) => PostService
+	.findAndDelete(req.params.PostId)
+	.then((post) => res.status(200).json({
+		status: 200,
+		success: true,
+		message: `Delete post success`,
+		post: toIPostObj(post)
+	}))
+	.catch((err) => next(err));
 
-}
-
-// const findPostAndUpdate = (req: Request, res: Response, next: NextFunction) => PostService.findAndUpdate()
+const findPostAndUpdate = (req: Request, res: Response, next: NextFunction) => PostService
+	.findAndUpdate(
+		req.params.PostId,
+		{ ...req.body }
+	)
+	.then((post) => res.status(200).json({
+		status: 200,
+		success: true,
+		message: "post updated successfully",
+		post: toIPostObj(post)
+	}))
+	.catch((err) => next(err));
 
 const queryAllPosts = (req: Request, res: Response, next: NextFunction) => {
 	const page = Number(req.query.page ?? "1")
@@ -67,6 +85,8 @@ const controllers = {
 	create,
 	queryAllPosts,
 	queryOnePost,
+	findPostAndUpdate,
+	findPostAndDelete
 };
 
 export default controllers;
