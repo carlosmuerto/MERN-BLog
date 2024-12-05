@@ -1,5 +1,5 @@
 import userModel, { IUser, toIuserObj } from "@s/models/user.model";
-import { UnAuthenticatedError, ValidationError } from "@s/utils/error";
+import { ForbiddenError, UnAuthenticatedError, ValidationError } from "@s/utils/error";
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -67,4 +67,11 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
     });
 }
 
-export {authenticateUser, generateUserWithToken}
+const adminUser = (req: Request, res: Response, next: NextFunction) => {
+  if (!res.locals.authenticatedUserDoc) return next(new UnAuthenticatedError("Un Authenticated"));
+  if (!res.locals.authenticatedUserDoc.isAdmin) return next(new ForbiddenError("You are not an Admin"));
+  const adminUserDoc = res.locals.authenticatedUserDoc;
+  next();
+}
+
+export {authenticateUser, adminUser, generateUserWithToken}

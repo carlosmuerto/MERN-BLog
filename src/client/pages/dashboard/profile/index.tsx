@@ -25,6 +25,8 @@ const Profile = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
 
+  const [/* ignered element */, { isLoading: isSignOutLoading }] = AuthAPI.useSignOutMutation();
+
   const [
     registerUserUpdate,
     {
@@ -96,7 +98,7 @@ const Profile = () => {
 
   const handleNewPost = () => {
     if (currentUser && currentUser.token) {
-      navigate({ to: "/" });
+      navigate({ to: "/dashboard/new-post" });
     }
   };
 
@@ -142,13 +144,13 @@ const Profile = () => {
         <span className="text-sm text-red-500 mt-5">
           {errors.password && <p>{errors.password.message}</p>}
         </span>
-        <Button type="submit" outline disabled={isUpdateLoading || isDeleteLoading}>
-          {isUpdateLoading || isDeleteLoading ? "loading" : "UpDate"}
+        <Button type="submit" outline disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading} >
+          {isSignOutLoading || isUpdateLoading || isDeleteLoading? "loading" : "UpDate"}
         </Button>
 
         {currentUser.isAdmin && (
-          <Button type="button" outline disabled={isUpdateLoading || isDeleteLoading} onClick={handleNewPost}>
-            {isUpdateLoading || isDeleteLoading ? "loading" : "New Post"}
+          <Button type="button" outline disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading}  onClick={handleNewPost}>
+            {isSignOutLoading || isUpdateLoading || isDeleteLoading? "loading" : "New Post"}
           </Button>
         )}
 
