@@ -50,6 +50,8 @@ const PostService = {
 	create,
 	queryAll,
 	queryOne,
+	findAndUpdate,
+	findAndDelete
 }
 
 export default PostService
