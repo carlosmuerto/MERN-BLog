@@ -20,11 +20,13 @@ const create = (post: PostJSONObJ): Promise<IPost> => {
 	});
 }
 
+const estimatedCount = () => postModel.estimatedDocumentCount().exec()
+
 interface postUpdatableField {
 	title?: string;
 	content?: string;
 	image?: string;
-	category?: categories,
+	//category?: categories,
 }
 
 const findAndUpdate = (id:string, post:postUpdatableField): Promise<IPost> => {
@@ -49,6 +51,7 @@ const queryOne = (id: String): Promise<IPost> => {
 const PostService = {
 	create,
 	queryAll,
+	estimatedCount,
 	queryOne,
 	findAndUpdate,
 	findAndDelete
