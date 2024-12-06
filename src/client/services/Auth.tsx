@@ -1,18 +1,7 @@
 // Need to use the React-specific entry point to import createApi
+import { APIErros, APIResponseBase } from "@/Utils";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // import { jwtDecode } from "jwt-decode";
-
-export type APIErros = {
-  statusCode: number;
-  message: string;
-  messageStack: { [x: string]: string };
-}
-
-export type APIResponseBase = {
-  status: number,
-  success: boolean,
-  message: string,
-}
 
 // actions CONSTANTS
 const ACTION_PREPEND = "API/Auth";

@@ -12,9 +12,14 @@ import { Error } from "mongoose";
 import newPost from "@/pages/dashboard/newPost";
 import Posts from "@/pages/posts";
 import postPage from "@/pages/posts/postPage";
+import { isUndefined } from "lodash";
 
 export type AppRouteContext = {
 	AuthState: AuthState
+}
+
+export type PaginationSearchParams = {
+  page: number,
 }
 
 const redirectToLogInBeforeLoad = ({context}:{context:AppRouteContext}) => {
@@ -47,13 +52,19 @@ const indexRoute = createRoute({
 
 const postsRoute = createRoute({
   getParentRoute: () => rootRoute,
+  validateSearch: (search: Record<string, unknown>): PaginationSearchParams => {
+    if (isUndefined(search?.page)) search.page = 1
+    return {
+      page: Number(search?.page ?? 1),
+    }
+  },
   path: "/posts",
   component: Posts,
 });
 
 const postsIdRoute = createRoute({
-  getParentRoute: () => postsRoute,
-  path: "/$postId",
+  getParentRoute: () => rootRoute,
+  path: "/posts/$postId",
   component: postPage,
 });
 

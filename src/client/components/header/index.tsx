@@ -102,14 +102,26 @@ const Header = () => {
             </Navbar.Link>
           )}
         </Link>
-        <Link className="" to="/projects">
+        <Link
+          className=""
+          to="/projects"
+          search={{
+            pageIndex: 1,
+          }}
+        >
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
               Projects
             </Navbar.Link>
           )}
         </Link>
-        <Link className="" to="/posts">
+        <Link
+          className=""
+          to="/posts"
+          search={{
+            page: 1
+          }}
+        >
           {({ isActive }) => (
             <Navbar.Link active={isActive} as={"div"}>
               Posts
