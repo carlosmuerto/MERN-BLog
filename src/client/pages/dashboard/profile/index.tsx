@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import userDefaultProfileImage from "@assets/user_profile_icon.png";
-import AuthAPI, { APIErros } from "@/services/Auth";
+import AuthAPI from "@/services/Auth";
 import {
   removeCredentials,
   selectCurrentUser,
@@ -13,6 +13,7 @@ import {
 } from "@redux/authSlice";
 import { HiInformationCircle } from "react-icons/hi";
 import { useNavigate } from "@tanstack/react-router";
+import { APIErros } from "@/Utils";
 
 type ProfileUpdateInputs = {
   username: string;
