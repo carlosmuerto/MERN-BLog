@@ -13,6 +13,8 @@ export interface Post {
 	content: string;
 	image: string;
 	category: string,
+  updatedAt: string, 
+  createdAt: string,
 	// slug?: String,
 }
 
@@ -23,6 +25,11 @@ export interface APIAllPostResponse extends APIResponseBase {
   posts: Post[]
 }
 
+export interface APIOnePostResponse extends APIResponseBase {
+  post: Post
+}
+
+
 // actions CONSTANTS
 const ACTION_PREPEND = "API/Post";
 // Define a service using a base URL and expected endpoints
@@ -32,6 +39,21 @@ const PostsAPI = createApi({
     baseUrl: "/api/post",
   }),
   endpoints: (builder) => ({
+    onePost: builder.query<APIOnePostResponse, string >({
+      query: (postId) => ({
+        url: "/" + postId
+      }),
+      transformErrorResponse: (err):APIErros => {
+        if ('data' in err) {
+          return err.data as APIErros;
+        }
+        return {
+          messageStack: {},
+          statusCode: 500,
+          message: err.error
+        };
+      },
+    }),
 
     allPost: builder.query<APIAllPostResponse, number >({
       query: (page) => ({
