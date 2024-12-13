@@ -95,8 +95,6 @@ const queryAllPosts = (req: Request, res: Response, next: NextFunction) => {
 	if (req.query.title) {
 		const regex = new RegExp(req.query.title.toString(), 'i') // i for case insensitive
 		query.set("title", {$regex: regex})
-
-		console.log(req.query.title.toString())
 	}
 
 	if (queryError.size > 0) return next(new BadRequestError("Bad Request", queryError))

@@ -19,7 +19,9 @@ export type AppRouteContext = {
 }
 
 export type PaginationSearchParams = {
-  page: number,
+  page?: number,
+  title?: string,
+  category?: string,
 }
 
 const redirectToLogInBeforeLoad = ({context}:{context:AppRouteContext}) => {
@@ -77,6 +79,13 @@ const aboutRoute = createRoute({
 
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
+  validateSearch: (search: Record<string, unknown>): PaginationSearchParams => {
+    if (isUndefined(search?.page)) search.page = 1
+    return {
+      page: Number(search?.page ?? 1),
+      category: "project"
+    }
+  },
   path: "/projects",
   component: Projects,
 });

@@ -106,7 +106,7 @@ const Header = () => {
           className=""
           to="/projects"
           search={{
-            pageIndex: 1,
+            page: 1,
           }}
         >
           {({ isActive }) => (

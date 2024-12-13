@@ -55,12 +55,10 @@ const PostsAPI = createApi({
       },
     }),
 
-    allPost: builder.query<APIAllPostResponse, number >({
-      query: (page) => ({
+    allPost: builder.query<APIAllPostResponse, {page?:number, category?:string, title?:string} >({
+      query: (params) => ({
         url: "",
-				params: {
-          page
-        }
+				params
       }),
       transformErrorResponse: (err):APIErros => {
         if ('data' in err) {

@@ -1,11 +1,6 @@
+import { useLocation, useSearch } from "@tanstack/react-router"
+import postList from "@/components/posts/postList";
 
-
-const Projects = () => {
-  return (
-    <h1 className="text-3xl font-bold underline">
-      Projects
-    </h1>
-  )
-}
+const Projects = () => postList({searchParams: useSearch({ from: "/projects" })})
 
 export default Projects
