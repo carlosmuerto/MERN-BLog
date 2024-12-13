@@ -5,7 +5,8 @@ import { BaseError } from "@s/utils/error";
 
 export enum categories {
 	uncategorized = "uncategorized",
-	test = "test"
+	test = "test",
+	project = "project"
 }
 
 // Ipost OBject Interface
@@ -20,16 +21,19 @@ export interface PostJSONObJ {
 	content?: string;
 	image?: string;
 	category?: categories,
+	createdAt?: Date,
+	updatedAt?: Date;
 	// slug?: String,
 }
 
 // 1. Create an interface representing a document in MongoDB.
-export interface IPost extends Document {
+interface IPost extends Document {
 	author: IUser;
 	title: string;
 	content: string;
 	image: string;
 	category: categories,
+	
 	// slug: String,
 }
 
@@ -73,8 +77,9 @@ const postSchema = new Schema<IPost>(
 );
 
 
+
 // export JSON object
-const toIPostObj = (postdoc: IPost):PostJSONObJ  => ({
+const toIPostObj = (postdoc: PostDocument):PostJSONObJ  => ({
 	author: {
 		id: postdoc.author.id,
 		username: postdoc.author.username,
@@ -84,9 +89,19 @@ const toIPostObj = (postdoc: IPost):PostJSONObJ  => ({
 	title: postdoc.title,
 	content: postdoc.content,
 	image: postdoc.image,
-	category: postdoc.category
+	category: postdoc.category,
+	createdAt: postdoc.createdAt,
+	updatedAt: postdoc.updatedAt
 });
 
 export default mongoose.model<IPost>("Post", postSchema);
+
+
+
+export type PostDocument = mongoose.Document<unknown, {}, IPost> & IPost & Required<{
+	_id: unknown;
+}> & {
+	__v: number;
+} & {updatedAt?: Date, createdAt?: Date}
 
 export { toIPostObj };

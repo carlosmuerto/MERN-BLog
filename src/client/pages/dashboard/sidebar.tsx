@@ -33,7 +33,7 @@ const DashboardSidebar = () => {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <Link className="" to="/dashboard/profile">
+          <Link className="" to="/dashboard/profile" >
             {({ isActive }) => (
               <Sidebar.Item
                 active={isActive}
@@ -47,19 +47,17 @@ const DashboardSidebar = () => {
             )}
           </Link>
 
-          <li>
-            <Link
-              className=""
-              to="/dashboard/new-post"
-              disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading}
-            >
-              {({ isActive }) => (
-                <Sidebar.Item active={isActive} icon={HiNewspaper} as={"div"}>
-                  New Post
-                </Sidebar.Item>
-              )}
-            </Link>
-          </li>
+          <Link
+            className=""
+            to="/dashboard/new-post"
+            disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading}
+          >
+            {({ isActive }) => (
+              <Sidebar.Item active={isActive} icon={HiNewspaper} as={"div"}>
+                New Post
+              </Sidebar.Item>
+            )}
+          </Link>
 
           <Sidebar.Item
             icon={HiArrowSmRight}

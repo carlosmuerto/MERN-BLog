@@ -123,6 +123,16 @@ const UpdateAuthCredentials = (
         "Update Success, token User time expires In " + expiresIn
       );
     })
+    .catch((err: mongoose.Error.ValidationError) => {
+      // handle validation Errors
+      console.log(`[mongodb]: ValidationError`);
+      const errorMessages: Map<string, string> = new Map();
+      for (const errKey in err.errors) {
+        errorMessages.set(errKey, err.errors[errKey].message);
+      }
+
+      next(new ValidationError(err.message.split(":")[0], errorMessages));
+    })
     .catch((err) => {
       next(err);
     });

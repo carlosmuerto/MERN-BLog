@@ -1,8 +1,8 @@
-import postModel, { categories, IPost, PostJSONObJ } from "@s/models/post.model";
+import postModel, { categories, PostDocument, PostJSONObJ } from "@s/models/post.model";
 import { NotFoundError, ValidationError } from "@s/utils/error";
 import mongoose from "mongoose";
 
-const create = (post: PostJSONObJ): Promise<IPost> => {
+const create = (post: PostJSONObJ): Promise<PostDocument> => {
 	const newPost = new postModel(post);
 	return newPost.save().then((savedPost) => {
 		if (savedPost) {
@@ -29,7 +29,7 @@ interface postUpdatableField {
 	category?: categories,
 }
 
-const findAndUpdate = (id:string, postIn:postUpdatableField): Promise<IPost> => {
+const findAndUpdate = (id:string, postIn:postUpdatableField): Promise<PostDocument> => {
 	return postModel.findById(id).populate("author").exec().then((postDoc) => {
 		if (!postDoc) return Promise.reject(new NotFoundError("Post Not Found"))
 
@@ -43,7 +43,7 @@ const findAndUpdate = (id:string, postIn:postUpdatableField): Promise<IPost> => 
 }
 
 
-const findAndDelete = (id: String): Promise<IPost> => {
+const findAndDelete = (id: String): Promise<PostDocument> => {
 	return postModel
     .findByIdAndDelete(id)
 		.populate("author")
@@ -51,11 +51,11 @@ const findAndDelete = (id: String): Promise<IPost> => {
     .then((deletedPostDoc) => deletedPostDoc ?? Promise.reject(new ValidationError("Post Not Found")));
 }
 
-const queryAll = (page = 1, pageSize = 5): Promise<IPost[]> => {
-	return postModel.find().limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
+const queryAll = (page = 1, pageSize = 5, queries: {}): Promise<PostDocument[]> => {
+	return postModel.find(queries).limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
 }
 
-const queryOne = (id: String): Promise<IPost> => {
+const queryOne = (id: String): Promise<PostDocument> => {
 	return postModel.findById(id).populate("author").exec().then((postDoc) => postDoc ?? Promise.reject(new NotFoundError("Post Not Found")))
 }
 
