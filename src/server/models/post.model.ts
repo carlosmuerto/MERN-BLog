@@ -5,7 +5,8 @@ import { BaseError } from "@s/utils/error";
 
 export enum categories {
 	uncategorized = "uncategorized",
-	test = "test"
+	test = "test",
+	project = "project"
 }
 
 // Ipost OBject Interface

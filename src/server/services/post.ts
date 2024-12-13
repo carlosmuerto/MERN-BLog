@@ -51,8 +51,8 @@ const findAndDelete = (id: String): Promise<PostDocument> => {
     .then((deletedPostDoc) => deletedPostDoc ?? Promise.reject(new ValidationError("Post Not Found")));
 }
 
-const queryAll = (page = 1, pageSize = 5): Promise<PostDocument[]> => {
-	return postModel.find().limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
+const queryAll = (page = 1, pageSize = 5, queries: {}): Promise<PostDocument[]> => {
+	return postModel.find(queries).limit(pageSize).skip((page - 1) * pageSize).populate("author").exec()
 }
 
 const queryOne = (id: String): Promise<PostDocument> => {
