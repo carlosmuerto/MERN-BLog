@@ -47,17 +47,21 @@ const DashboardSidebar = () => {
             )}
           </Link>
 
-          <Link
-            className=""
-            to="/dashboard/new-post"
-            disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading}
-          >
-            {({ isActive }) => (
-              <Sidebar.Item active={isActive} icon={HiNewspaper} as={"div"}>
-                New Post
-              </Sidebar.Item>
-            )}
-          </Link>
+          {currentUser && currentUser.isAdmin &&
+            <Link
+              className=""
+              to="/dashboard/new-post"
+              disabled={isSignOutLoading || isUpdateLoading || isDeleteLoading}
+            >
+              {({ isActive }) => (
+                <Sidebar.Item active={isActive} icon={HiNewspaper} as={"div"}>
+                  New Post
+                </Sidebar.Item>
+              )}
+            </Link>
+          }
+
+
 
           <Sidebar.Item
             icon={HiArrowSmRight}

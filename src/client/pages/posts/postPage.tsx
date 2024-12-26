@@ -2,9 +2,13 @@ import PostsAPI from '@/services/Post';
 import { Link, useParams } from '@tanstack/react-router';
 import { Button, Spinner } from 'flowbite-react';
 import noImageAvailable from '@assets/No_Image_Available.jpg'
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/redux/authSlice';
 
 
 const postPage = () => {
+
+	const currentUser = useSelector(selectCurrentUser);
 
 	const { postId } = useParams({
 		from: "/posts/$postId"
@@ -24,7 +28,7 @@ const postPage = () => {
 			<p className='text-xl text-gray-500'>ERROR Not Posible state</p>
 		</div>
 	);
-	
+
 
 	if (isSuccess && data) {
 		const { post } = data;
@@ -54,9 +58,21 @@ const postPage = () => {
 					</span>
 				</div>
 				<div
-					className='p-3 max-w-2xl mx-auto w-full post-content'
-					dangerouslySetInnerHTML={{ __html: post.content }}
-				></div>
+					className='p-3 max-w-2xl mx-auto w-full post-content border-b border-slate-500'	>
+					{post.content}
+				</div>
+
+				{currentUser && currentUser.isAdmin &&
+					<div className="p-3 max-w-2xl mx-auto w-full text-red-500 flex justify-between mt-5">
+						<div />
+						<span onClick={() => { console.log("delete post") }} className="cursor-pointer">
+							Delete Post
+						</span>
+					</div>
+				}
+
+
+
 			</main>
 		);
 	}
@@ -66,7 +82,7 @@ const postPage = () => {
 			<p className='text-xl text-gray-500'>ERROR Not Posible state</p>
 		</div>
 	);
-	
+
 }
 
 export default postPage
