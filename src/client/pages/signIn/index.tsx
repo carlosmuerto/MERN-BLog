@@ -3,10 +3,11 @@ import { Alert, Button, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import AuthAPI, { APIErros } from "../../services/Auth";
+import AuthAPI from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/authSlice";
+import { APIErros } from "@/Utils";
 
 type SignInInputs = {
   email: string;

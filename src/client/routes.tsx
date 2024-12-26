@@ -10,9 +10,18 @@ import Profile from "@pages/dashboard/profile";
 import { AuthState } from "@redux/authSlice";
 import { Error } from "mongoose";
 import newPost from "@/pages/dashboard/newPost";
+import Posts from "@/pages/posts";
+import postPage from "@/pages/posts/postPage";
+import { isUndefined } from "lodash";
 
 export type AppRouteContext = {
 	AuthState: AuthState
+}
+
+export type PaginationSearchParams = {
+  page?: number,
+  title?: string,
+  category?: string,
 }
 
 const redirectToLogInBeforeLoad = ({context}:{context:AppRouteContext}) => {
@@ -43,6 +52,25 @@ const indexRoute = createRoute({
   component: Home,
 });
 
+const postsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  validateSearch: (search: Record<string, unknown>): PaginationSearchParams => {
+    if (isUndefined(search?.page)) search.page = 1
+    return {
+      page: Number(search?.page ?? 1),
+    }
+  },
+  path: "/posts",
+  component: Posts,
+});
+
+const postsIdRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/posts/$postId",
+  component: postPage,
+});
+
+
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/about",
@@ -51,6 +79,13 @@ const aboutRoute = createRoute({
 
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
+  validateSearch: (search: Record<string, unknown>): PaginationSearchParams => {
+    if (isUndefined(search?.page)) search.page = 1
+    return {
+      page: Number(search?.page ?? 1),
+      category: "project"
+    }
+  },
   path: "/projects",
   component: Projects,
 });
@@ -91,6 +126,9 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
   projectsRoute,
+  postsRoute.addChildren([
+    postsIdRoute,
+  ]),
   dashboardRoute.addChildren([
     profileRoute,
     newPostRoute

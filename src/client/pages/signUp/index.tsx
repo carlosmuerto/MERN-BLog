@@ -3,10 +3,11 @@ import { Alert, Button, Spinner, TextInput } from "flowbite-react";
 import { BsGithub } from "react-icons/bs";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { HiInformationCircle } from "react-icons/hi";
-import AuthAPI, { APIErros } from "../../services/Auth";
+import AuthAPI from "../../services/Auth";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/authSlice";
+import { APIErros } from "@/Utils";
 
 type SignUpInputs = {
   username: string;
