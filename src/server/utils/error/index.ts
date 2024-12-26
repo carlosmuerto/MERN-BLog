@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 // base error class (500)
 export class BaseError extends Error {
-  statusCode: number;
+  status: number;
   messageStack:  Map<string, string> ;
   constructor(
     message: string = "[server]: UNHANDLE ERROR",
@@ -10,7 +10,7 @@ export class BaseError extends Error {
     messageStack: Map<string, string> = new Map()
   ) {
     super(message);
-    this.statusCode = statusCode;
+    this.status = statusCode;
     this.messageStack = messageStack;
   }
 }
@@ -54,8 +54,8 @@ export class NotFoundError extends BaseError {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandeler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof BaseError) {
-    res.status(err.statusCode).json({
-      statusCode: err.statusCode,
+    res.status(err.status).json({
+      statusCode: err.status,
       message: err.message,
       messageStack: Object.fromEntries(err.messageStack),
     });

@@ -1,6 +1,7 @@
 // Need to use the React-specific entry point to import createApi
-import { APIErros, APIResponseBase, baseTransformErrorResponse } from "@/Utils";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { APIResponseBase, APIResponseBaseError, baseTransformErrorResponse } from "@/Utils";
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError, FetchBaseQueryMeta } from "@reduxjs/toolkit/query/react";
+
 // import { jwtDecode } from "jwt-decode";
 
 // actions CONSTANTS
@@ -11,7 +12,7 @@ export const AuthAPI = createApi({
   reducerPath: ACTION_PREPEND,
   baseQuery: fetchBaseQuery({
     baseUrl: "/api/auth",
-  }),
+  }) as BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError | APIResponseBaseError, {}, FetchBaseQueryMeta>,
   endpoints: (builder) => ({
     signIn: builder.mutation<string, { email: string; password: string }>({
       query: ({ email, password }) => ({

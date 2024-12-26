@@ -1,4 +1,5 @@
 import PostsAPI from '@/services/Post';
+import {APIResponseBaseError, isAPIResponseBaseError} from '@utils'
 import { Link, useParams } from '@tanstack/react-router';
 import { Button, Spinner } from 'flowbite-react';
 import noImageAvailable from '@assets/No_Image_Available.jpg'
@@ -23,11 +24,20 @@ const postPage = () => {
 		</div>
 	);
 
-	if (isError) return (
-		<div className='flex justify-center items-center min-h-screen'>
-			<p className='text-xl text-gray-500'>ERROR Not Posible state</p>
-		</div>
-	);
+	if (isError) {
+		if (isAPIResponseBaseError(error)) {
+			return (
+				<div className='flex justify-center items-center min-h-screen'>
+					<p className='text-xl text-gray-500'>{error.message}</p>
+				</div>
+			)
+		}
+		return (
+			<div className='flex justify-center items-center min-h-screen'>
+				<p className='text-xl text-gray-500'>ERROR Not Posible state</p>
+			</div>
+		)
+	};
 
 
 	if (isSuccess && data) {
@@ -65,7 +75,7 @@ const postPage = () => {
 				{currentUser && currentUser.isAdmin &&
 					<div className="p-3 max-w-2xl mx-auto w-full text-red-500 flex justify-between mt-5">
 						<div />
-						<span onClick={() => { console.log("delete post") }} className="cursor-pointer">
+						<span onClick={() => { console.log("delete post: " + post.title ) }} className="cursor-pointer">
 							Delete Post
 						</span>
 					</div>

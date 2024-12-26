@@ -2,13 +2,13 @@ export const notImplemented = (input: object) => {
     throw new Error('Not Yet Implemented' + input)
 }
 
-export type APIErros = {
-    statusCode: number;
-    message: string;
+export interface APIResponseBaseError extends APIResponseBase {
     messageStack: { [x: string]: string };
-}
+};
 
-export type APIResponseBase = {
+export const isAPIResponseBaseError = (err: any): err is APIResponseBaseError => "messageStack" in err
+
+export interface APIResponseBase {
     status: number,
     success: boolean,
     message: string,
@@ -16,13 +16,14 @@ export type APIResponseBase = {
 
 
 
-export const baseTransformErrorResponse = (err: any): APIErros => {
+export const baseTransformErrorResponse = (err: any): APIResponseBaseError => {
     if ('data' in err) {
-        return err.data as APIErros;
+        return err.data as APIResponseBaseError;
     }
     return {
         messageStack: {},
-        statusCode: 500,
-        message: err.error
-    };
+        status: 500,
+        message: err.error,
+        success: false,
+    } as APIResponseBaseError;
 };

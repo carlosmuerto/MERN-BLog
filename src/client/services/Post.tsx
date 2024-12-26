@@ -1,5 +1,5 @@
-import { APIErros, APIResponseBase, baseTransformErrorResponse } from "@/Utils";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { APIResponseBaseError, APIResponseBase, baseTransformErrorResponse } from "@/Utils";
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError, FetchBaseQueryMeta } from "@reduxjs/toolkit/query/react";
 
 // post Interface
 export interface Post {
@@ -37,7 +37,7 @@ const PostsAPI = createApi({
   reducerPath: ACTION_PREPEND,
   baseQuery: fetchBaseQuery({
     baseUrl: "/api/post",
-  }),
+  }) as BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError | APIResponseBaseError, {}, FetchBaseQueryMeta>,
   endpoints: (builder) => ({
     onePost: builder.query<APIOnePostResponse, string >({
       query: (postId) => ({
