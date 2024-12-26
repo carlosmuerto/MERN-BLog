@@ -1,5 +1,5 @@
 // Need to use the React-specific entry point to import createApi
-import { APIErros, APIResponseBase } from "@/Utils";
+import { APIErros, APIResponseBase, baseTransformErrorResponse } from "@/Utils";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // import { jwtDecode } from "jwt-decode";
 
@@ -23,12 +23,7 @@ export const AuthAPI = createApi({
         // const decoded = jwtDecode(response.token)
         return response.token
       },
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
 		signUp: builder.mutation<string, { email: string; username: string; password: string }>({
@@ -41,12 +36,7 @@ export const AuthAPI = createApi({
         // const decoded = jwtDecode(response.token)
         return response.token
       },
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
 		signOut: builder.mutation<string, string>({
@@ -57,12 +47,7 @@ export const AuthAPI = createApi({
           "Authorization": `Bearer ${token}`
         }
       }),
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
     delete: builder.mutation<string, string>({
@@ -73,12 +58,7 @@ export const AuthAPI = createApi({
           "Authorization": `Bearer ${token}`
         }
       }),
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
     currentUser: builder.query<string, APIResponseBase & {token: string}>({
@@ -88,12 +68,7 @@ export const AuthAPI = createApi({
           "Authorization": `Bearer ${token}`
         }
       }),
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
 		Update: builder.mutation<string, {email?: string; username?: string; profileImg?: string; password?: string, token: string}>({
@@ -109,12 +84,7 @@ export const AuthAPI = createApi({
         // const decoded = jwtDecode(response.token)
         return response.token
       },
-      transformErrorResponse: (err) => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return err;
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
   }),
 });

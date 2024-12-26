@@ -13,3 +13,16 @@ export type APIResponseBase = {
     success: boolean,
     message: string,
 }
+
+
+
+export const baseTransformErrorResponse = (err: any): APIErros => {
+    if ('data' in err) {
+        return err.data as APIErros;
+    }
+    return {
+        messageStack: {},
+        statusCode: 500,
+        message: err.error
+    };
+};

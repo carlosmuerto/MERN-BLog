@@ -1,4 +1,4 @@
-import { APIErros, APIResponseBase } from "@/Utils";
+import { APIErros, APIResponseBase, baseTransformErrorResponse } from "@/Utils";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // post Interface
@@ -43,16 +43,15 @@ const PostsAPI = createApi({
       query: (postId) => ({
         url: "/" + postId
       }),
-      transformErrorResponse: (err):APIErros => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return {
-          messageStack: {},
-          statusCode: 500,
-          message: err.error
-        };
-      },
+      transformErrorResponse: baseTransformErrorResponse,
+    }),
+
+    deletePost: builder.mutation<APIOnePostResponse, string>({
+      query: (postId) => ({
+        url: "/" + postId,
+        method: 'DELETE',
+      }),
+      transformErrorResponse: baseTransformErrorResponse,
     }),
 
     allPost: builder.query<APIAllPostResponse, {page?:number, category?:string, title?:string} >({
@@ -60,16 +59,7 @@ const PostsAPI = createApi({
         url: "",
 				params
       }),
-      transformErrorResponse: (err):APIErros => {
-        if ('data' in err) {
-          return err.data as APIErros;
-        }
-        return {
-          messageStack: {},
-          statusCode: 500,
-          message: err.error
-        };
-      },
+      transformErrorResponse: baseTransformErrorResponse,
     }),
   }),
 });
